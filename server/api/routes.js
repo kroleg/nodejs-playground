@@ -37,3 +37,9 @@ api.route('/users/:userId/meals/:mealId')
     .get(mealsController.read)
     .delete(mealsController.delete)
     .put(mealsController.update);
+
+api.use(function(err, req, res, next) {
+    if (err.message.match(/requires auth/)) {
+        res.status(403).send({ error: err.message })
+    }
+})

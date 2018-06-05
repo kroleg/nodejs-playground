@@ -35,7 +35,12 @@ class List extends Component {
     componentDidMount() {
         document.title = 'Meals';
         return fetch('/api/users/me/meals', { credentials: "same-origin" })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status !== 200) {
+                    this.props.history.push('/login')
+                }
+                return res.json()
+            })
             .then(
                 (result) => {
                     this.setState({ meals: result.data })
