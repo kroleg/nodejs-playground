@@ -13,7 +13,7 @@ class MealsEdit extends Component {
             <div>
                 <Link to='/meals'>&lt; Back to meals list</Link>
                 <h1>Edit meal</h1>
-                <Form submitUrl={`/api/users/me/meals/${this.mealId}`} submitMethod='PUT' mealId={this.mealId} />
+                <Form submitUrl={`/api/users/me/meals/${this.mealId}`} submitMethod='PUT' mealId={this.mealId} navigateTo={this.props.history.push}/>
             </div>
         );
     }

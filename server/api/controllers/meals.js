@@ -34,8 +34,16 @@ module.exports = {
     },
 
 
-    update: () => {},
-
+    async update (req, res, next) {
+        try {
+            const newProps = req.body;
+            // delete req.body._id;
+            await Meal.findOneAndUpdate({ _id: req.params.mealId }, newProps);
+            res.status(200).end()
+        } catch (err) {
+            next(err)
+        }
+    },
 
     async delete (req, res, next) {
         try {

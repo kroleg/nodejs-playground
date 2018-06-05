@@ -28,7 +28,7 @@ class Form extends Component {
                     <label>Note</label>
                     <input type="text" name='note' className="form-control" placeholder="Note (optional)" onChange={this.handleChange} value={this.state.note}/>
                 </div>
-                <button type="submit" className="btn btn-primary">Add</button>
+                <button type="submit" className="btn btn-primary">{this.props.mealId ? 'Update' : 'Add'}</button>
             </form>
         );
     }
@@ -37,7 +37,7 @@ class Form extends Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        fetch('/api/users/me/meals', {
+        fetch(this.props.submitUrl, {
             method: this.props.submitMethod || 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -46,7 +46,7 @@ class Form extends Component {
             body: JSON.stringify(this.state),
             credentials: "same-origin",
         }).then(() => {
-            this.props.history.push('/meals')
+            this.props.navigateTo('/meals')
         });
     }
 

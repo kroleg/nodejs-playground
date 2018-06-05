@@ -12,7 +12,7 @@ class MealsAdd extends Component {
             <div>
                 <Link to='/meals'>&lt; Back to meals list</Link>
                 <h1>Add meal</h1>
-                <Form submitUrl='/api/users/me/meals'/>
+                <Form submitUrl='/api/users/me/meals' navigateTo={this.props.history.push}/>
             </div>
         );
     }
