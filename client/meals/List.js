@@ -20,6 +20,19 @@ class List extends Component {
     }
 
     render() {
+        const uniqueDates = [];
+        const mealsByDay = {};
+        this.state.meals.forEach(m => {
+            if (!uniqueDates.includes(m.date)) {
+                uniqueDates.push(m.date);
+            }
+            if (!mealsByDay[m.date]) {
+                mealsByDay[m.date] = []
+            }
+            mealsByDay[m.date].push(m)
+        })
+        uniqueDates.sort((a, b) => b - a) // sor desc
+        const mealsList = uniqueDates.map(date => <DayOfMeals meals={mealsByDay[date]} date={date} />)
         return (
             <div>
                 <h1>My meals <Link to='/meals/add'><small>Add</small></Link></h1>
@@ -33,20 +46,10 @@ class List extends Component {
                     onChange={this.onFiltersChange}
                 />
                 <button type='button' className='btn btn-primary' onClick={this.searchMeals}>Apply filters</button>
-                <table>
-                    <tbody>
-                    <tr><th>Time</th><th>Calories</th><th>Note</th><th></th></tr>
-                    { this.state.meals.map(m => (
-                        <tr>
-                            <td>{moment(m.time + m.date).format('MMM Do, H:m')}</td>
-                            <td>{m.calories}</td>
-                            <td>{m.note}</td>
-                            <td><Link to={`/meals/${m._id}/edit`} className='btn btn-light'>Edit</Link></td>
-                            <td><button onClick={() => this.deleteMeal(m._id)} className='btn btn-outline-danger'>Delete</button></td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+                <div className="meals-list">
+                    {mealsList}
+                </div>
+
             </div>
         );
     }
@@ -195,6 +198,33 @@ class Filters extends Component {
         } else {
             this.props.onChangeFilterTime(val)
         }
+    }
+}
+
+class DayOfMeals extends React.Component {
+
+    render () {
+        const dateFormatted = moment(this.props.date).format('MMM Do')
+        return (
+            <div>
+                <strong>{dateFormatted}</strong>
+                <table>
+                    <tbody>
+                    { this.props.meals.map(m => (
+                        <tr>
+                            <td>{moment(m.time + m.date).format('H:m')}</td>
+                            <td>{m.calories}</td>
+                            <td>{m.note}</td>
+                            <td className='meals-actions'>
+                                <Link to={`/meals/${m._id}/edit`} className='btn btn-link'>Edit</Link>
+                                <button onClick={() => this.deleteMeal(m._id)} className='btn btn-link btn-danger'>Delete</button>
+                            </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
+        )
     }
 }
 
