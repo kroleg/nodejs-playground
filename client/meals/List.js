@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import moment from 'moment'
 
 class List extends Component {
     constructor (props) {
@@ -16,10 +17,10 @@ class List extends Component {
                 <Link to='/meals/add'>Add</Link>
                 <table>
                     <tbody>
-                    <tr><th>Time</th><th>Calories</th><th>Note</th><th>1</th></tr>
+                    <tr><th>Time</th><th>Calories</th><th>Note</th><th></th></tr>
                     { this.state.meals.map(m => (
                         <tr>
-                            <td>{m.time}</td>
+                            <td>{moment(m.time + m.date).format('MMM Do, H:m')}</td>
                             <td>{m.calories}</td>
                             <td>{m.note}</td>
                             <td><Link to={`/meals/${m._id}/edit`} className='btn btn-light'>Edit</Link></td>

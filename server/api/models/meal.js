@@ -9,7 +9,8 @@ const schema = new Schema(
             type: String,
             'default': shortid.generate
         },
-        createdAt: Date,
+        date: Number, // unix timestamp in ms of start of day (0:00:00)
+        time: Number, // number of miliseconds from day start
         note: String,
         calories: Number,
         user: String

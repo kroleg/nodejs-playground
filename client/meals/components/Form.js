@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
+import DateTime from 'react-datetime'
+import moment from 'moment'
 
 class Form extends Component {
     constructor (props) {
         super(props)
         this.state = {
-            // datetime:
+            datetime: moment(),
             calories: 0,
             note: ''
         }
@@ -17,8 +19,7 @@ class Form extends Component {
             <form action={this.props.submitUrl} method='POST' className={this.props.className} onSubmit={(e) => this.handleSubmit(e)} noValidate>
                 <div className="form-group">
                     <label htmlFor="exampleInputEmail1">Time and Date</label>
-                    <input type="email" className="form-control" name='datetime'
-                           placeholder="Enter date and time" value={this.state.email} onChange={this.handleChange}/>
+                    <DateTime value={this.state.datetime} input={false} viewMode={'time'}/>
                 </div>
                 <div className="form-group">
                     <label>Calories</label>
@@ -33,9 +34,12 @@ class Form extends Component {
         );
     }
 
-
     handleSubmit(event) {
         event.preventDefault();
+
+        const data = { ...this.state };
+        data.date = data.datetime.clone().startOf('day').valueOf()
+        data.time = data.datetime - data.date
 
         fetch(this.props.submitUrl, {
             method: this.props.submitMethod || 'POST',
@@ -43,7 +47,7 @@ class Form extends Component {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(this.state),
+            body: JSON.stringify(data),
             credentials: "same-origin",
         }).then(() => {
             this.props.navigateTo('/meals')

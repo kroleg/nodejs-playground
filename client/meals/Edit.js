@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import Form from './components/Form'
-import { Link } from 'react-router-dom'
 
 class MealsEdit extends Component {
     constructor (props) {
@@ -11,7 +10,6 @@ class MealsEdit extends Component {
     render() {
         return (
             <div>
-                <Link to='/meals'>&lt; Back to meals list</Link>
                 <h1>Edit meal</h1>
                 <Form submitUrl={`/api/users/me/meals/${this.mealId}`} submitMethod='PUT' mealId={this.mealId} navigateTo={this.props.history.push}/>
             </div>
