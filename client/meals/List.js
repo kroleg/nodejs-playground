@@ -12,8 +12,10 @@ class List extends Component {
             dateTo: moment(),
             timeFrom: moment(),
             timeTo: moment(),
+            useTimeFilter: false,
         }
         this.onFiltersChange = this.onFiltersChange.bind(this)
+        this.onFiltersTimeSelect = this.onFiltersTimeSelect.bind(this)
         this.searchMeals = this.searchMeals.bind(this)
     }
 
@@ -26,6 +28,8 @@ class List extends Component {
                     dateTo={this.state.dateTo}
                     timeFrom={this.state.timeFrom}
                     timeTo={this.state.timeTo}
+                    useTimeFilter={this.state.useTimeFilter}
+                    onChangeFilterTime={this.onFiltersTimeSelect}
                     onChange={this.onFiltersChange}
                 />
                 <button type='button' className='btn btn-primary' onClick={this.searchMeals}>Apply filters</button>
@@ -51,8 +55,10 @@ class List extends Component {
         const query = {
             dateFrom: this.state.dateFrom.clone().startOf('day').valueOf(),
             dateTo: this.state.dateTo.clone().startOf('day').valueOf(),
-            timeFrom: this.state.timeFrom - this.state.timeFrom.clone().startOf('day'),
-            timeTo: this.state.timeTo - this.state.timeTo.clone().startOf('day'),
+        }
+        if (this.state.useTimeFilter) {
+            query.timeFrom = this.state.timeFrom - this.state.timeFrom.clone().startOf('day')
+            query.timeTo = this.state.timeTo - this.state.timeTo.clone().startOf('day')
         }
         const qs = Object.keys(query).map(key => key + '=' + query[key]).join('&')
         return fetch('/api/users/me/meals' + (qs ? '?' + qs : ''), { credentials: "same-origin" })
@@ -80,6 +86,10 @@ class List extends Component {
 
     onFiltersChange(prop, newValue) {
         this.setState({ [prop]: newValue })
+    }
+
+    onFiltersTimeSelect(newValue) {
+        this.setState({ useTimeFilter: newValue })
     }
 
     componentDidMount() {
@@ -137,13 +147,18 @@ class Filters extends Component {
         super(props)
         this.dateFormat = 'MMM Do'
         this.timeFormat = 'H:mm'
+        this.timeSelectChange = this.timeSelectChange.bind(this)
     }
 
     render() {
         return (
             <div className='filters'>
-                Show meals from {this.renderDateTimePicker('dateFrom')} to {this.renderDateTimePicker('dateTo')}
-                eaten between {this.renderDateTimePicker('timeFrom')} and {this.renderDateTimePicker('timeTo')}
+                Dates: {this.renderDateTimePicker('dateFrom')} to {this.renderDateTimePicker('dateTo')} <br/>
+                <select onChange={this.timeSelectChange} defaultValue={this.props.useTimeFilter === false ? 'no' : 'yes' }>
+                    <option value="no">Any time</option>
+                    <option value="yes">Specified time</option>
+                </select>
+                {this.props.useTimeFilter ? <span>{this.renderDateTimePicker('timeFrom')} to {this.renderDateTimePicker('timeTo')}</span> : '' }
             </div>
         )
     }
@@ -158,6 +173,17 @@ class Filters extends Component {
             renderInput={(props, openCalendar) => <button className='btn btn-link' type='button' onClick={openCalendar}>{this.props[propName].format(format)}</button>}
             onChange={m => this.props.onChange(propName, m)}
         />
+    }
+
+    timeSelectChange (event) {
+        const val = event.target.value
+        if (val === 'no') {
+            this.props.onChangeFilterTime(false)
+        } else if (val === 'yes') {
+            this.props.onChangeFilterTime(true)
+        } else {
+            this.props.onChangeFilterTime(val)
+        }
     }
 }
 
