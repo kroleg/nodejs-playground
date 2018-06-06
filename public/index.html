@@ -33,6 +33,20 @@
             height: auto;
             vertical-align: baseline;
         }
+        .meals-actions .btn,
+        .meals-actions a {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+
+        }
+        tr:hover .meals-actions .btn,
+        tr:hover .meals-actions a {
+            opacity: 1
+        }
+        .btn-link.btn-danger {
+            border: none;
+            color: red;
+        }
     </style>
     <link rel="stylesheet" href="/react-datetime.css">
     <div id="app">loading js</div>
