@@ -7,7 +7,14 @@ module.exports = {
     async list (req, res, next) {
         try {
             const user = await getUser(req);
-            const meals = await Meal.find({ user: user._id })
+            const dbSearchQuery = { user: user._id };
+            if (req.query.dateFrom) {
+                dbSearchQuery.date = { $gte: req.query.dateFrom, $lte: req.query.dateTo };
+            }
+            if (req.query.timeFrom) {
+                dbSearchQuery.time = { $gte: req.query.timeFrom, $lte: req.query.timeTo };
+            }
+            const meals = await Meal.find(dbSearchQuery)
             res.send({ data: meals })
         } catch (err) {
             next(err)
