@@ -89,7 +89,16 @@ class List extends Component {
     }
 
     onFiltersTimeSelect(newValue) {
-        this.setState({ useTimeFilter: newValue })
+        this.setState({ useTimeFilter: !!newValue })
+        if (newValue === 'breakfast') {
+            const bfStart = moment().hours(9).minutes(0).seconds(0).milliseconds(0);
+            const bfEnd = bfStart.clone().hours(11)
+            this.setState({ timeFrom: bfStart, timeTo: bfEnd })
+        } else if (newValue === 'lunch') {
+            const bfStart = moment().hours(12).minutes(0).seconds(0).milliseconds(0);
+            const bfEnd = bfStart.clone().hours(15)
+            this.setState({ timeFrom: bfStart, timeTo: bfEnd })
+        }
     }
 
     componentDidMount() {
@@ -156,6 +165,8 @@ class Filters extends Component {
                 Dates: {this.renderDateTimePicker('dateFrom')} to {this.renderDateTimePicker('dateTo')} <br/>
                 <select onChange={this.timeSelectChange} defaultValue={this.props.useTimeFilter === false ? 'no' : 'yes' }>
                     <option value="no">Any time</option>
+                    <option value="breakfast">Breakfast</option>
+                    <option value="lunch">Lunch</option>
                     <option value="yes">Specified time</option>
                 </select>
                 {this.props.useTimeFilter ? <span>{this.renderDateTimePicker('timeFrom')} to {this.renderDateTimePicker('timeTo')}</span> : '' }
