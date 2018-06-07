@@ -1,32 +1,37 @@
 import { BrowserRouter, Route } from 'react-router-dom'
 import ReactDOM from "react-dom";
 import React from 'react'
-import { Link } from 'react-router-dom'
-// import RoomsAndGuests from './pages/Login'
+import { Link, Redirect } from 'react-router-dom'
 import Signup from './pages/Signup'
 import Login from './pages/Login'
 import MealsList from './meals/List'
 import MealsAdd from './meals/Add'
 import MealsEdit from './meals/Edit'
 import Settings from './pages/Settings'
-// import Photos from './pages/Photos'
-// import Navigation from './partials/Navigation'
 
 class App extends React.Component {
     constructor (props) {
         super(props)
         this.state = {
-            caloriesPerDay: 0
+            caloriesPerDay: 0,
+            loggedIn: false,
+            checkingLoginStatus: true,
         }
         this.onSettingsUpdate = this.onSettingsUpdate.bind(this)
+        this.onLogin = this.onLogin.bind(this)
+        this.onLogout = this.onLogout.bind(this)
     }
 
     render () {
+        if (this.state.checkingLoginStatus) {
+            return ''
+        }
         return (<div>
-            <Route path='/' component={Navigation}/>
+            <Route render={props => this.state.loggedIn ? <Navigation onLogout={this.onLogout} {...props} /> : '' } />
             <main>
+                <Route exact path='/' render={() => <Redirect to={this.state.loggedIn ? '/meals' : '/login' } /> } />
                 <Route exact path='/signup' component={Signup}/>
-                <Route exact path='/login' component={Login}/>
+                <Route exact path='/login' render={props => this.state.loggedIn ? <Redirect to='/meals'/> : <Login onLogin={this.onLogin} {...props} />}/>
                 <Route exact path='/meals' render={props => <MealsList caloriesPerDay={this.state.caloriesPerDay} {...props} />} />
                 <Route exact path='/meals/add' component={MealsAdd}/>
                 <Route exact path='/meals/:mealId/edit' component={MealsEdit}/>
@@ -43,13 +48,14 @@ class App extends React.Component {
             },
             credentials: "same-origin",
         }).then(res => {
+            this.setState({ checkingLoginStatus: false })
             if (res.status === 200) {
+                this.setState({ loggedIn: true })
                 return res.json()
             }
             else {
-                console.error(res.status)
+                this.setState({ loggedIn: false })
             }
-            // todo this.props.history.push('/login')
         }).then(settings => {
             this.setState({ caloriesPerDay: settings.caloriesPerDay })
         });
@@ -58,8 +64,22 @@ class App extends React.Component {
     onSettingsUpdate(settings) {
         this.setState({ caloriesPerDay: settings.caloriesPerDay })
     }
+
+    onLogin() {
+        this.setState({ loggedIn: true })
+    }
+
+    onLogout() {
+        this.setState({ loggedIn: false })
+    }
 }
+
 class Navigation extends React.Component {
+    constructor (props) {
+        super(props)
+        this.clickLogout = this.clickLogout.bind(this)
+    }
+
     render () {
         return (
             <nav className="navbar-light bg-light">
@@ -78,17 +98,10 @@ class Navigation extends React.Component {
                 'Accept': 'application/json',
             },
             credentials: "same-origin",
-        }).then(res => {
-            if (res.status === 200) {
-                return res.json()
-            }
-            else {
-                console.error(res.status)
-            }
-            // todo this.props.history.push('/login')
-        }).then(settings => {
-            this.setState({ caloriesPerDay: settings.caloriesPerDay })
-        });
+        }).then(() => {
+            this.props.onLogout()
+            this.props.history.push('/login')
+        })
     }
 }
 

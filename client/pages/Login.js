@@ -44,6 +44,7 @@ class Login extends Component {
             body: JSON.stringify(this.state),
             credentials: "same-origin",
         }).then(() => {
+            this.props.onLogin()
             this.props.history.push('/meals')
         });
     }
