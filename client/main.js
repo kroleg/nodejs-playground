@@ -12,20 +12,22 @@ import Settings from './pages/Settings'
 // import Photos from './pages/Photos'
 // import Navigation from './partials/Navigation'
 
-const App = () => (
-    <div>
-        <main>
+class App extends React.Component {
+    render () {
+        return (<div>
             <Route path='/' component={Navigation}/>
-            <Route exact path='/signup' component={Signup}/>
-            <Route exact path='/login' component={Login}/>
-            <Route exact path='/meals' component={MealsList}/>
-            <Route exact path='/meals/add' component={MealsAdd}/>
-            <Route exact path='/meals/:mealId/edit' component={MealsEdit}/>
-            <Route exact path='/settings' component={Settings}/>
-        </main>
-    </div>
-)
+            <main>
 
+                <Route exact path='/signup' component={Signup}/>
+                <Route exact path='/login' component={Login}/>
+                <Route exact path='/meals' component={MealsList}/>
+                <Route exact path='/meals/add' component={MealsAdd}/>
+                <Route exact path='/meals/:mealId/edit' component={MealsEdit}/>
+                <Route exact path='/settings' component={Settings}/>
+            </main>
+        </div>)
+    }
+}
 class Navigation extends React.Component {
     render () {
         return (

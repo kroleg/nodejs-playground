@@ -32,7 +32,7 @@ class List extends Component {
             mealsByDay[m.date].push(m)
         })
         uniqueDates.sort((a, b) => b - a) // sor desc
-        const mealsList = uniqueDates.map(date => <DayOfMeals meals={mealsByDay[date]} date={date} />)
+        const mealsList = uniqueDates.map(date => <DayOfMeals key={date} meals={mealsByDay[date]} date={date} />)
         return (
             <div>
                 <h1>My meals <Link to='/meals/add'><small>Add</small></Link></h1>
@@ -130,14 +130,12 @@ class List extends Component {
     }
 
     deleteMeal(mealId) {
-        console.log('del meal', mealId)
         return fetch(`/api/users/me/meals/${mealId}`, { credentials: "same-origin", method: 'DELETE' })
             .then(
                 () => {
                     const meals = this.state.meals;
                     const index = meals.findIndex(m => m._id === mealId);
                     meals.splice(index, 1)
-                    console.log(index, meals)
                     this.setState({ meals })
                 },
                 // Note: it's important to handle errors here
@@ -211,7 +209,7 @@ class DayOfMeals extends React.Component {
                 <table>
                     <tbody>
                     { this.props.meals.map(m => (
-                        <tr>
+                        <tr key={m.time + m.date}>
                             <td>{moment(m.time + m.date).format('H:m')}</td>
                             <td>{m.calories}</td>
                             <td>{m.note}</td>
