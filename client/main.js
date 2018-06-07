@@ -8,6 +8,9 @@ import MealsList from './meals/List'
 import MealsAdd from './meals/Add'
 import MealsEdit from './meals/Edit'
 import Settings from './pages/Settings'
+import UsersList from './users/List'
+import UsersEdit from './users/Edit'
+import UsersAdd from './users/Add'
 
 class App extends React.Component {
     constructor (props) {
@@ -27,7 +30,7 @@ class App extends React.Component {
             return ''
         }
         return (<div>
-            <Route render={props => this.state.loggedIn ? <Navigation onLogout={this.onLogout} {...props} /> : '' } />
+            <Route render={props => this.state.loggedIn ? <Navigation allowedRoutes={this.getAllowedRoutes()} onLogout={this.onLogout} {...props} /> : '' } />
             <main>
                 <Route exact path='/' render={() => <Redirect to={this.state.loggedIn ? '/meals' : '/login' } /> } />
                 <Route exact path='/signup' component={Signup}/>
@@ -36,6 +39,9 @@ class App extends React.Component {
                 <Route exact path='/meals/add' component={MealsAdd}/>
                 <Route exact path='/meals/:mealId/edit' component={MealsEdit}/>
                 <Route exact path='/settings' render={props => <Settings onUpdate={this.onSettingsUpdate} {...props} />}/>
+                <Route exact path='/users' render={props => <UsersList caloriesPerDay={this.state.caloriesPerDay} {...props} />} />
+                <Route exact path='/users/:userId/edit' render={props => <UsersEdit {...props}/>} />
+                <Route exact path='/users/add' render={props => <UsersAdd {...props}/>} />
             </main>
         </div>)
     }
@@ -72,6 +78,17 @@ class App extends React.Component {
     onLogout() {
         this.setState({ loggedIn: false })
     }
+
+    getAllowedRoutes() {
+        const result = [];
+        if (this.state.userRole === 'manager' || this.state.userRole === 'manager') {
+            result.push('users')
+        }
+        if (this.state.userRole === 'manager') {
+            result.push()
+        }
+        return result;
+    }
 }
 
 class Navigation extends React.Component {
@@ -85,6 +102,8 @@ class Navigation extends React.Component {
             <nav className="navbar-light bg-light">
                 <Link to='/meals'>Meals</Link>
                 <Link to='/settings'>Settings</Link>
+                <Link to='/users'>Users</Link>
+                {/*{ this.props.allowedRoutes.includes('users') ? <Link to='/users'>Settings</Link>  : '' }*/}
                 <a href="/logout" onClick={this.clickLogout}>Logout</a>
             </nav>
         )
@@ -104,19 +123,5 @@ class Navigation extends React.Component {
         })
     }
 }
-
-
-// function routes() {
-//     const result = [];
-//     navItems.forEach(group => {
-//         group.items.forEach(item => {
-//             if (item.comp) {
-//                 result.push(item)
-//             }
-//         })
-//     })
-//     return result
-// }
-
 
 ReactDOM.render(<BrowserRouter><App /></BrowserRouter>, document.getElementById('app'))

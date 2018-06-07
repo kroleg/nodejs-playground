@@ -23,12 +23,12 @@ api.route('/sessions')
     .post(sessionsController.create);
 
 api.route('/users')
-    // .get(usersController.list)
+    .get(usersController.list)
     .post(usersController.create);
-api.route("/users/:id")
-    // .get(usersController.read)
-    // .delete(usersController.delete)
-    // .put(usersController.update);
+api.route("/users/:userId")
+    .get(usersController.read)
+    .delete(usersController.delete)
+    .put(usersController.update);
 
 
 api.route('/users/me/settings')
@@ -42,6 +42,10 @@ api.route('/users/:userId/meals/:mealId')
     .get(mealsController.read)
     .delete(mealsController.delete)
     .put(mealsController.update);
+
+api.use(function(req, res, next) {
+    res.status(404).send()
+})
 
 api.use(function(err, req, res, next) {
     if (err.message.match(/requires auth/)) {

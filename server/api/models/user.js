@@ -11,7 +11,11 @@ const schema = new Schema(
         },
         email: String,
         encryptedPassword: String,
-        role: String,
+        role: {
+            type: String,
+            default: 'regular',
+            enum: ['regular', 'manager', 'admin']
+        },
     },
     {
         strict: true,
