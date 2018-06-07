@@ -8,10 +8,11 @@ module.exports = {
         try {
             const user = await User.findOne({ email: req.body.email });
             if (!user) {
-                throw new Error('No such user')
+                return res.status(403).send({ error: 'No user with such email'})
             }
-            if (!validatePassword(req.body.password, user.encryptedPassword)) {
-                throw new Error('Invalid password')
+            const passwordValid = await validatePassword(req.body.password, user.encryptedPassword);
+            if (!passwordValid) {
+                return res.status(403).send({ error: 'Invalid password'})
             }
             req.login(user, function (err) {
                 if (err) {

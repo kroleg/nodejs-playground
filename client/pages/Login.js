@@ -26,6 +26,7 @@ class Login extends Component {
                         <label htmlFor="exampleInputPassword1">Password</label>
                         <input type="password" name='password' className="form-control" placeholder="Password" onChange={this.handleChange} value={this.state.password}/>
                     </div>
+                    { this.state.error ? <div className='alert alert-danger' role="alert">{this.state.error}</div> : ''}
                     <button type="submit" className="btn btn-primary">Login</button>
                 </form>
             </div>
@@ -43,9 +44,14 @@ class Login extends Component {
             },
             body: JSON.stringify(this.state),
             credentials: "same-origin",
-        }).then(() => {
-            this.props.onLogin()
-            this.props.history.push('/meals')
+        }).then(async res => {
+            if (res.status === 200) {
+                this.props.onLogin()
+                this.props.history.push('/meals')
+            } else {
+                const respBody = await res.json();
+                this.setState({ error: respBody.error })
+            }
         });
     }
 
