@@ -65,8 +65,30 @@ class Navigation extends React.Component {
             <nav className="navbar-light bg-light">
                 <Link to='/meals'>Meals</Link>
                 <Link to='/settings'>Settings</Link>
+                <a href="/logout" onClick={this.clickLogout}>Logout</a>
             </nav>
         )
+    }
+
+    clickLogout(event) {
+        event.preventDefault()
+        fetch('/api/sessions', {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+            },
+            credentials: "same-origin",
+        }).then(res => {
+            if (res.status === 200) {
+                return res.json()
+            }
+            else {
+                console.error(res.status)
+            }
+            // todo this.props.history.push('/login')
+        }).then(settings => {
+            this.setState({ caloriesPerDay: settings.caloriesPerDay })
+        });
     }
 }
 
