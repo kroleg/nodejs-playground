@@ -8,7 +8,7 @@ class List extends Component {
         super(props)
         this.state = {
             meals: [],
-            dateFrom: moment(),
+            dateFrom: moment().subtract(6, 'days'),
             dateTo: moment(),
             timeFrom: moment(),
             timeTo: moment(),
@@ -27,12 +27,24 @@ class List extends Component {
                 uniqueDates.push(m.date);
             }
             if (!mealsByDay[m.date]) {
-                mealsByDay[m.date] = []
+                mealsByDay[m.date] = { meals: [] }
             }
-            mealsByDay[m.date].push(m)
+            mealsByDay[m.date].meals.push(m)
         })
         uniqueDates.sort((a, b) => b - a) // sor desc
-        const mealsList = uniqueDates.map(date => <DayOfMeals key={date} meals={mealsByDay[date]} date={date} />)
+        for (let date of Object.keys(mealsByDay)) {
+            const dayCalories = mealsByDay[date].meals.reduce((sum, m) => sum + m.calories, 0)
+            mealsByDay[date].overEaten = dayCalories > this.props.caloriesPerDay
+        }
+        const mealsList = uniqueDates.map(date => {
+            return <DayOfMeals
+                key={date}
+                meals={mealsByDay[date].meals}
+                date={date}
+                overEaten={mealsByDay[date].overEaten}
+                colorDay={!this.state.useTimeFilter && this.props.caloriesPerDay > 0}
+            />
+        })
         return (
             <div>
                 <h1>My meals <Link to='/meals/add'><small>Add</small></Link></h1>
@@ -203,9 +215,10 @@ class DayOfMeals extends React.Component {
 
     render () {
         const dateFormatted = moment(this.props.date).format('MMM Do')
+        const containerClass = this.props.colorDay ? this.props.overEaten ? 'day-fail' : 'day-ok' : ''
         return (
-            <div>
-                <strong>{dateFormatted}</strong>
+            <div className={containerClass}>
+                <div className='day-date'>{dateFormatted}</div>
                 <table>
                     <tbody>
                     { this.props.meals.map(m => (

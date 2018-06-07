@@ -7,10 +7,12 @@ module.exports = {
     async list (req, res, next) {
         try {
             const user = await getUser(req);
-            let settings = await Setting.findOne({ user: user._id })
+            let settings = await Setting.findOne({ user: user._id }).lean()
             if (!settings) {
                 settings = { caloriesPerDay: 0 }
             }
+            delete settings._id
+            delete settings.user
             res.send(settings)
         } catch (err) {
             next(err)

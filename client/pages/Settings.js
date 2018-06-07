@@ -40,7 +40,8 @@ class Settings extends Component {
             body: JSON.stringify(this.state),
             credentials: "same-origin",
         }).then(() => {
-            this.props.history.push('/meals')
+            this.props.onUpdate(this.state)
+            this.props.history.goBack()
         });
     }
 
