@@ -17,6 +17,7 @@ class List extends Component {
         this.onFiltersChange = this.onFiltersChange.bind(this)
         this.onFiltersTimeSelect = this.onFiltersTimeSelect.bind(this)
         this.searchMeals = this.searchMeals.bind(this)
+        this.deleteMeal = this.deleteMeal.bind(this)
         this.userId = this.props.match.params.userId || 'me'
         this.apiBaseUrl = `/api/users/${this.userId}/meals`
         this.baseUrl = this.userId === 'me' ? '/meals' : `/users/${this.userId}/meals`
@@ -45,6 +46,7 @@ class List extends Component {
                 meals={mealsByDay[date].meals}
                 date={date}
                 overEaten={mealsByDay[date].overEaten}
+                deleteMeal={this.deleteMeal}
                 colorDay={!this.state.useTimeFilter && this.props.caloriesPerDay > 0}
             />
         })
@@ -212,7 +214,6 @@ class Filters extends Component {
 }
 
 class DayOfMeals extends React.Component {
-// todo fix delete meal link
     render () {
         const dateFormatted = moment(this.props.date).format('MMM Do')
         const containerClass = this.props.colorDay ? this.props.overEaten ? 'day-fail' : 'day-ok' : ''
@@ -228,7 +229,7 @@ class DayOfMeals extends React.Component {
                             <td>{m.note}</td>
                             <td className='meals-actions'>
                                 <Link to={`${this.baseUrl}/${m._id}/edit`} className='btn btn-link'>Edit</Link>
-                                <button onClick={() => this.deleteMeal(m._id)} className='btn btn-link btn-danger'>Delete</button>
+                                <button onClick={() => this.props.deleteMeal(m._id)} className='btn btn-link btn-danger'>Delete</button>
                             </td>
                         </tr>
                     ))}
