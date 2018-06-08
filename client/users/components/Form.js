@@ -6,6 +6,7 @@ class Form extends Component {
         super(props)
         this.state = {
             email: '',
+            role: 'regular'
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -22,6 +23,14 @@ class Form extends Component {
                     <label>Password</label>
                     <input type="password" name='password' className="form-control" placeholder={ this.props.userId ? 'Enter password to change it' : 'Password'}/>
                 </div>
+                <div className="form-group">
+                    <label>Role</label>
+                    <select name="role" className='form-control' value={this.state.role} onChange={this.handleChange}>
+                        <option value="regular">Regular user</option>
+                        <option value="manager">Manager (ability to add/update/remove users)</option>
+                        <option value="manager">Admin (ability to add/update/remove users and their meals)</option>
+                    </select>
+                </div>
                 { this.renderError() }
                 <button type="submit" className="btn btn-primary">{this.props.userId ? 'Update' : 'Add'}</button>
             </form>
@@ -32,7 +41,7 @@ class Form extends Component {
         event.preventDefault();
         this.setState({ error: null })
 
-        const data = { email: this.state.email };
+        const data = { email: this.state.email, role: this.state.role };
 
         if (event.target.elements.password.value) {
             data.password = event.target.elements.password.value;

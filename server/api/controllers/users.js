@@ -77,9 +77,15 @@ module.exports = {
 
     async update (req, res, next) {
         try {
-            let userId = req.params.userId
-            delete req.body._id;
-            const user = await User.findOneAndUpdate({ _id: userId }, req.body, { new: true }).select('email').lean()
+            const userId = req.params.userId
+            const userData = { ...req.body }
+            delete userData._id;
+            delete userData.role;
+            // allow to set role only if user is create by admin or manager
+            if (['admin', 'manager'].includes(req.user.role)) {
+                userData.role = req.body.role
+            }
+            const user = await User.findOneAndUpdate({ _id: userId }, userData, { new: true }).select('email').lean()
             if (!user) {
                 return res.status(404).send({ error: `User ${userId} not found` })
             }

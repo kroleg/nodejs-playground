@@ -13,13 +13,14 @@ class List extends Component {
         return (
             <div>
                 <h1>Users <Link to='/users/add'><small>Add</small></Link></h1>
-                <table>
+                <table className='table'>
                     <tbody>
-                        <tr><th>ID</th><th>Email</th><th>Actions</th></tr>
+                        <tr><th>ID</th><th>Email</th><th>Role</th><th>Actions</th></tr>
                     { this.state.users.map(user => (
                         <tr key={user._id}>
                             <td>{user._id}</td>
                             <td>{user.email}</td>
+                            <td>{user.role}</td>
                             <td className='table_actions'>
                                 {this.props.showMealsLink ? <Link to={`/users/${user._id}/meals`}>View meals</Link> : ''}
                                 <Link to={`/users/${user._id}/edit`}>Edit</Link>
