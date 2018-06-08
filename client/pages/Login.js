@@ -12,7 +12,6 @@ class Login extends Component {
     }
 
     render() {
-        //todo add link to signup
         return (
             <div>
                 <form action='/sessions' method='POST' className={'form-signup'} onSubmit={(e) => this.handleSubmit(e)} noValidate>
@@ -30,6 +29,7 @@ class Login extends Component {
                     { this.state.error ? <div className='alert alert-danger' role="alert">{this.state.error}</div> : ''}
                     <button type="submit" className="btn btn-primary">Login</button>
                 </form>
+                <p className='login_footnote'>If you don't have an account you can <a href="/signup">signup</a></p>
             </div>
         );
     }

@@ -65,3 +65,8 @@ tr:hover .table_actions--show-on-hover a {
 .day-date {
     font-weight: bold;
 }
+
+
+.login_footnote {
+    margin-top: 30px;
+}
