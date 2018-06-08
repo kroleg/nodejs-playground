@@ -17,6 +17,9 @@ class List extends Component {
         this.onFiltersChange = this.onFiltersChange.bind(this)
         this.onFiltersTimeSelect = this.onFiltersTimeSelect.bind(this)
         this.searchMeals = this.searchMeals.bind(this)
+        this.userId = this.props.match.params.userId || 'me'
+        this.apiBaseUrl = `/api/users/${this.userId}/meals`
+        this.baseUrl = this.userId === 'me' ? '/meals' : `/users/${this.userId}/meals`
     }
 
     render() {
@@ -47,7 +50,7 @@ class List extends Component {
         })
         return (
             <div>
-                <h1>My meals <Link to='/meals/add'><small>Add</small></Link></h1>
+                <h1>Meals <Link to={this.baseUrl + '/add'}><small>Add</small></Link></h1>
                 <Filters
                     dateFrom={this.state.dateFrom}
                     dateTo={this.state.dateTo}
@@ -76,10 +79,10 @@ class List extends Component {
             query.timeTo = this.state.timeTo - this.state.timeTo.clone().startOf('day')
         }
         const qs = Object.keys(query).map(key => key + '=' + query[key]).join('&')
-        return fetch('/api/users/me/meals' + (qs ? '?' + qs : ''), { credentials: "same-origin" })
+        return fetch(this.apiBaseUrl + (qs ? '?' + qs : ''), { credentials: "same-origin" })
             .then(res => {
-                if (res.status !== 200) {
-                    this.props.history.push('/login')
+                if (res.status === 403) {
+                    throw new Error('auth')
                 }
                 return res.json()
             })
@@ -91,10 +94,7 @@ class List extends Component {
                 // instead of a catch() block so that we don't swallow
                 // exceptions from actual bugs in components.
                 (error) => {
-                    this.setState({
-                        isLoaded: true,
-                        error
-                    });
+                    // this.props.history.push('/login')
                 }
             )
     }
@@ -118,7 +118,7 @@ class List extends Component {
 
     componentDidMount() {
         document.title = 'Meals';
-        return fetch('/api/users/me/meals', { credentials: "same-origin" })
+        return fetch(this.apiBaseUrl, { credentials: "same-origin" })
             .then(res => {
                 if (res.status !== 200) {
                     this.props.history.push('/login')
@@ -142,7 +142,7 @@ class List extends Component {
     }
 
     deleteMeal(mealId) {
-        return fetch(`/api/users/me/meals/${mealId}`, { credentials: "same-origin", method: 'DELETE' })
+        return fetch(`${this.apiBaseUrl}/${mealId}`, { credentials: "same-origin", method: 'DELETE' })
             .then(
                 () => {
                     const meals = this.state.meals;
@@ -212,7 +212,7 @@ class Filters extends Component {
 }
 
 class DayOfMeals extends React.Component {
-
+// todo fix delete meal link
     render () {
         const dateFormatted = moment(this.props.date).format('MMM Do')
         const containerClass = this.props.colorDay ? this.props.overEaten ? 'day-fail' : 'day-ok' : ''
@@ -227,7 +227,7 @@ class DayOfMeals extends React.Component {
                             <td>{m.calories}</td>
                             <td>{m.note}</td>
                             <td className='meals-actions'>
-                                <Link to={`/meals/${m._id}/edit`} className='btn btn-link'>Edit</Link>
+                                <Link to={`${this.baseUrl}/${m._id}/edit`} className='btn btn-link'>Edit</Link>
                                 <button onClick={() => this.deleteMeal(m._id)} className='btn btn-link btn-danger'>Delete</button>
                             </td>
                         </tr>

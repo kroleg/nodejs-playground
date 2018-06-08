@@ -12,6 +12,7 @@ class Login extends Component {
     }
 
     render() {
+        //todo add link to signup
         return (
             <div>
                 <form action='/sessions' method='POST' className={'form-signup'} onSubmit={(e) => this.handleSubmit(e)} noValidate>

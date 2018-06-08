@@ -1,6 +1,7 @@
 'use strict';
 
 const User = require('../models/user');
+const Setting = require('../models/setting');
 const { encryptPassword } = require('./helpers/password');
 
 module.exports = {
@@ -51,10 +52,8 @@ module.exports = {
             } else {
                 //todo check rights
             }
-            const user = await User.findOne({ _id: userId }).select('email').lean()
-            // if (req.params.userId === 'me') {
-            //     user.settings = await Setting.findOne({ user: user._id }).lean()
-            // }
+            const user = await User.findOne({ _id: userId }).select('-encryptedPassword').lean()
+            user.settings = await Setting.findOne({ user: userId }).select('-_id -user').lean()
             if (!user) {
                 return res.status(404).send({ error: `User ${userId} not found` })
             }
@@ -86,6 +85,7 @@ module.exports = {
                 return res.status(404).send({ error: `User ${userId} not found` })
             }
             await User.remove({ _id: userId })
+            //todo delete his meals
             res.send(user)
         } catch (err) {
             next(err)

@@ -1,6 +1,7 @@
 'use strict';
 
 const Meal = require('../models/meal');
+const User = require('../models/user');
 
 module.exports = {
 

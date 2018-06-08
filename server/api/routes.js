@@ -32,7 +32,6 @@ api.route("/users/:userId")
 
 
 api.route('/users/me/settings')
-    .get(settingsController.list)
     .put(settingsController.update);
 
 api.route('/users/:userId/meals')

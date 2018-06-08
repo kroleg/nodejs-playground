@@ -20,9 +20,10 @@ class List extends Component {
                         <tr key={user._id}>
                             <td>{user._id}</td>
                             <td>{user.email}</td>
-                            <td>
-                                <Link to={`/users/${user._id}/edit`} className='btn btn-link'>Edit</Link>
-                                <button onClick={() => this.deleteUser(user._id)} className='btn btn-link btn-danger'>Delete</button>
+                            <td className='table-actions'>
+                                <Link to={`/users/${user._id}/meals`}>View meals</Link>
+                                <Link to={`/users/${user._id}/edit`}>Edit</Link>
+                                <a href='#' onClick={() => this.deleteUser(user._id)} className='link-danger'>Delete</a>
                             </td>
                         </tr>
                     ))}

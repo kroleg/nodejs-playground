@@ -19,6 +19,7 @@ class App extends React.Component {
             caloriesPerDay: 0,
             loggedIn: false,
             checkingLoginStatus: true,
+            userRole: 'regular'
         }
         this.onSettingsUpdate = this.onSettingsUpdate.bind(this)
         this.onLogin = this.onLogin.bind(this)
@@ -42,12 +43,13 @@ class App extends React.Component {
                 <Route exact path='/users' render={props => <UsersList caloriesPerDay={this.state.caloriesPerDay} {...props} />} />
                 <Route exact path='/users/:userId/edit' render={props => <UsersEdit {...props}/>} />
                 <Route exact path='/users/add' render={props => <UsersAdd {...props}/>} />
+                <Route exact path='/users/:userId/meals' render={props => <MealsList {...props}/>} />
             </main>
         </div>)
     }
 
     componentDidMount() {
-        fetch('/api/users/me/settings', {
+        fetch('/api/users/me', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -62,8 +64,11 @@ class App extends React.Component {
             else {
                 this.setState({ loggedIn: false })
             }
-        }).then(settings => {
-            this.setState({ caloriesPerDay: settings.caloriesPerDay })
+        }).then(user => {
+            this.setState({
+                caloriesPerDay: user.settings.caloriesPerDay,
+                userRole: user.role,
+            })
         });
     }
 
@@ -85,7 +90,7 @@ class App extends React.Component {
             result.push('users')
         }
         if (this.state.userRole === 'manager') {
-            result.push()
+            result.push('users')
         }
         return result;
     }
@@ -102,8 +107,8 @@ class Navigation extends React.Component {
             <nav className="navbar-light bg-light">
                 <Link to='/meals'>Meals</Link>
                 <Link to='/settings'>Settings</Link>
-                <Link to='/users'>Users</Link>
-                {/*{ this.props.allowedRoutes.includes('users') ? <Link to='/users'>Settings</Link>  : '' }*/}
+
+                { this.props.allowedRoutes.includes('users') ? <Link to='/users'>Users</Link>  : '' }
                 <a href="/logout" onClick={this.clickLogout}>Logout</a>
             </nav>
         )
