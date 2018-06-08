@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import api from '../api'
 
 class Login extends Component {
     constructor(props) {
@@ -14,7 +15,7 @@ class Login extends Component {
     render() {
         return (
             <div>
-                <form action='/sessions' method='POST' className={'form-signup'} onSubmit={(e) => this.handleSubmit(e)} noValidate>
+                <form className={'form-signup'} onSubmit={this.handleSubmit} noValidate>
                     <h1>Login</h1>
                     <div className="form-group">
                         <label htmlFor="exampleInputEmail1">Email address</label>
@@ -37,23 +38,12 @@ class Login extends Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        fetch('/api/sessions/', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(this.state),
-            credentials: "same-origin",
-        }).then(async res => {
-            if (res.status === 200) {
-                this.props.onLoggedIn()
-                this.props.history.push('/meals')
-            } else {
-                const respBody = await res.json();
-                this.setState({ error: respBody.error })
-            }
-        });
+        api.login(this.state).then(() => {
+            this.props.onLoggedIn()
+            this.props.history.push('/meals')
+        }, err => {
+            this.setState({ error: err.message })
+        })
     }
 
     handleChange(event) {
