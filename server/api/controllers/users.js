@@ -1,6 +1,7 @@
 'use strict';
 
 const User = require('../models/user');
+const Meal = require('../models/meal');
 const Setting = require('../models/setting');
 const { encryptPassword } = require('./helpers/password');
 
@@ -103,7 +104,7 @@ module.exports = {
                 return res.status(404).send({ error: `User ${userId} not found` })
             }
             await User.remove({ _id: userId })
-            //todo delete his meals
+            await Meal.remove({ user: userId })
             res.send(user)
         } catch (err) {
             next(err)
