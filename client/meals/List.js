@@ -47,6 +47,7 @@ class List extends Component {
                 date={date}
                 overEaten={mealsByDay[date].overEaten}
                 deleteMeal={this.deleteMeal}
+                baseUrl={this.baseUrl}
                 colorDay={!this.state.useTimeFilter && this.props.caloriesPerDay > 0}
             />
         })
@@ -228,7 +229,7 @@ class DayOfMeals extends React.Component {
                             <td>{m.calories}</td>
                             <td>{m.note}</td>
                             <td className='table_actions table_actions--show-on-hover'>
-                                <Link to={`${this.baseUrl}/${m._id}/edit`}>Edit</Link>
+                                <Link to={`${this.props.baseUrl}/${m._id}/edit`}>Edit</Link>
                                 <a href='' onClick={() => this.props.deleteMeal(m._id)} className='link-danger'>Delete</a>
                             </td>
                         </tr>
