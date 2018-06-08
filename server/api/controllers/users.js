@@ -39,7 +39,7 @@ module.exports = {
             }
 
             // allow to set role only if user is create by admin or manager
-            if (req.user && ['admmin', 'manager'].includes(req.user.role)) {
+            if (req.user && ['admin', 'manager'].includes(req.user.role)) {
                 userData.role = req.body.role
             }
 
