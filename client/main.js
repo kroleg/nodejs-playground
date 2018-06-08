@@ -19,7 +19,6 @@ class App extends React.Component {
         this.state = {
             caloriesPerDay: 0,
             loggedIn: false,
-            checkingLoginStatus: true,
             userRole: 'regular'
         }
         this.onSettingsUpdate = this.onSettingsUpdate.bind(this)
@@ -28,9 +27,6 @@ class App extends React.Component {
     }
 
     render () {
-        if (this.state.checkingLoginStatus) {
-            return ''
-        }
         return (<div>
             <Route render={props => this.state.loggedIn ? <Navigation allowedRoutes={this.getAllowedRoutes()} onLogout={this.onLogout} {...props} /> : '' } />
             <main>
@@ -54,7 +50,6 @@ class App extends React.Component {
             .then(async (user) => {
                 this.setState({
                     loggedIn: true,
-                    checkingLoginStatus: false,
                     caloriesPerDay: user.settings ? user.settings.caloriesPerDay : null,
                     userRole: user.role,
                 })
