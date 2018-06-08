@@ -49,7 +49,6 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        //todo avoid this requests on login and signup pages
         fetch('/api/users/me', {
             method: 'GET',
             headers: {
