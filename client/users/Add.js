@@ -10,7 +10,7 @@ class usersAdd extends Component {
         return (
             <div>
                 <h1>Add user</h1>
-                <Form purpose='createUser' navigateTo={this.props.history.push}/>
+                <Form navigateTo={this.props.history.push}/>
             </div>
         );
     }

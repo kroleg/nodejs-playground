@@ -14,7 +14,7 @@ class Form extends Component {
 
     render() {
         return (
-            <form action={this.props.submitUrl} method='POST' className={this.props.className} onSubmit={(e) => this.handleSubmit(e)} noValidate>
+            <form className={this.props.className} onSubmit={(e) => this.handleSubmit(e)} noValidate>
                 <div className="form-group">
                     <label>Email</label>
                     <input type="email" name='email' className="form-control" placeholder="Email" onChange={this.handleChange} value={this.state.email}/>
@@ -47,19 +47,8 @@ class Form extends Component {
             data.password = event.target.elements.password.value;
         }
 
-        let work;
-        if (this.props.purpose === 'createUser') {
-            work = api.createUser(data)
-
-        } else if (this.props.purpose === 'updateUser') {
-            work = api.updateUser(this.props.userId, data)
-        } else {
-            console.error('Form has incorrect purpose:', this.props.purpose)
-            return
-        }
-
-        work.then(() => this.props.navigateTo('/users'))
-            .catch(err => this.setState({ error: err.message }))
+        const work = this.props.userId ? api.updateUser(this.props.userId, data) : api.createUser(data)
+        work.then(() => this.props.navigateTo('/users'), err => this.setState({ error: err.message }))
     }
 
     handleChange(event) {
@@ -70,22 +59,7 @@ class Form extends Component {
 
     componentDidMount() {
         if (this.props.userId) {
-            return fetch(`/api/users/${this.props.userId}`, { credentials: "same-origin" })
-                .then(res => res.json())
-                .then(
-                    (result) => {
-                        this.setState(result)
-                    },
-                    // Note: it's important to handle errors here
-                    // instead of a catch() block so that we don't swallow
-                    // exceptions from actual bugs in components.
-                    (error) => {
-                        this.setState({
-                            isLoaded: true,
-                            error
-                        });
-                    }
-                )
+            api.readUser(this.props.userId).then(user => this.setState(user), err => this.setState({ error: err }))
         }
     }
 

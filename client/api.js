@@ -7,8 +7,18 @@ const defaultOptions = {
     credentials: "same-origin",
 }
 
-const methods = {
+function fetchOrThrow (url, options = defaultOptions) {
+    return fetch(url, options).then(async res => {
+        const body = await res.json()
+        if (res.status === 200) {
+            return body
+        }
+        //todo better handle 401 = no rights, 403 = no auth
+        throw new Error(body.error)
+    })
+}
 
+const methods = {
 
     async getCurrentUser () {
         return fetch('/api/users/me', defaultOptions).then(res => {
@@ -31,67 +41,49 @@ const methods = {
         }
     },
 
-    async logout () {
-        return fetch('/api/sessions', {
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/json',
-            },
-            credentials: "same-origin",
-        })
+    logout () {
+        return fetchOrThrow('/api/sessions', { ...defaultOptions, method: 'DELETE' })
     },
 
-    async createUser (data) {
-        const res = await fetch('/api/users', {
-            ...defaultOptions,
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
-        if (res.status !== 200) {
-            const respBody = await res.json();
-            throw new Error(respBody.error)
-        }
+    createUser (data) {
+        return fetchOrThrow('/api/users', {...defaultOptions, method: 'POST', body: JSON.stringify(data)})
     },
 
-    async updateUser (userId, data) {
-        const res = await fetch(`/api/users/${userId}`, {
-            ...defaultOptions,
-            method: 'PUT',
-            body: JSON.stringify(data)
-        });
-        if (res.status !== 200) {
-            const respBody = await res.json();
-            throw new Error(respBody.error)
-        }
+    updateUser (userId, data) {
+        return fetchOrThrow(`/api/users/${userId}`, {...defaultOptions, method: 'PUT', body: JSON.stringify(data)})
+    },
+
+    readUser (userId) {
+        return fetchOrThrow(`/api/users/${userId}`)
+    },
+
+    deleteUser (userId) {
+        return fetchOrThrow(`/api/users/${userId}`, { ...defaultOptions, method: 'DELETE' })
+    },
+
+    listUsers () {
+        return fetchOrThrow('/api/users')
     },
 
     createMeal (userId, data) {
-        return fetch(`/api/users/${userId}/meals`, {
-            ...defaultOptions,
-            method: 'POST',
-            body: JSON.stringify(data),
-        })
+        return fetchOrThrow(`/api/users/${userId}/meals`, {...defaultOptions, method: 'POST', body: JSON.stringify(data)})
     },
 
     updateMeal (userId, mealId, data) {
-        return fetch(`/api/users/${userId}/meals/${mealId}`, {
-            ...defaultOptions,
-            method: 'PUT',
-            body: JSON.stringify(data),
-        })
+        return fetchOrThrow(`/api/users/${userId}/meals/${mealId}`, {...defaultOptions, method: 'PUT', body: JSON.stringify(data)})
     },
 
     readMeal (userId, mealId) {
-        return fetch(`/api/users/${userId}/meals/${mealId}`, defaultOptions).then(res => res.json())
+        return fetchOrThrow(`/api/users/${userId}/meals/${mealId}`)
     },
 
     listMeals (userId, query = {}) {
         const qs = Object.keys(query).map(key => key + '=' + query[key]).join('&')
-        return fetch(`/api/users/${userId}/meals` + (qs ? '?' + qs : ''), defaultOptions).then(res => res.json())
+        return fetchOrThrow(`/api/users/${userId}/meals` + (qs ? '?' + qs : ''), defaultOptions)
     },
 
     deleteMeal (userId, mealId) {
-        return fetch(`/api/users/${userId}/meals/${mealId}`, { ...defaultOptions, method: 'DELETE' })
+        return fetchOrThrow(`/api/users/${userId}/meals/${mealId}`, { ...defaultOptions, method: 'DELETE' })
     },
 
 }

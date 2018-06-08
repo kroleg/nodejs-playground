@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import api from '../api'
 
 class List extends Component {
     constructor (props) {
         super(props)
         this.state = {
             users: [],
+            error: null
         }
     }
 
@@ -13,6 +15,7 @@ class List extends Component {
         return (
             <div>
                 <h1>Users <Link to='/users/add'><small>Add</small></Link></h1>
+                { this.state.error ? <div className='alert alert-danger'>{this.state.error}</div> : '' }
                 <table className='table'>
                     <tbody>
                         <tr><th>ID</th><th>Email</th><th>Role</th><th>Actions</th></tr>
@@ -36,28 +39,12 @@ class List extends Component {
 
     componentDidMount() {
         document.title = 'Users';
-        return fetch('/api/users', { credentials: "same-origin" })
-            .then(res => {
-                if (res.status !== 200) {
-                    // this.props.history.push('/login')
-                    //todo show error. possible codes 401 = no rights, 403 = no auth
-                }
-                return res.json()
+        api.listUsers()
+            .then(users => {
+                this.setState({ users })
+            }, err => {
+                this.setState({ error: err.message, users: [] })
             })
-            .then(
-                (result) => {
-                    this.setState({ users: result })
-                },
-                // Note: it's important to handle errors here
-                // instead of a catch() block so that we don't swallow
-                // exceptions from actual bugs in components.
-                (error) => {
-                    this.setState({
-                        isLoaded: true,
-                        error
-                    });
-                }
-            )
     }
 
     clickDelete(user, event) {
@@ -65,25 +52,13 @@ class List extends Component {
         if (!confirm(`Are you sure want to delete user ${user.email}?`)) {
             return
         }
-        const userId = user._id
-        return fetch(`/api/users/${userId}`, { credentials: "same-origin", method: 'DELETE' })
-            .then(
-                () => {
-                    const users = this.state.users;
-                    const index = users.findIndex(m => m._id === userId);
-                    users.splice(index, 1)
-                    this.setState({ users })
-                },
-                // Note: it's important to handle errors here
-                // instead of a catch() block so that we don't swallow
-                // exceptions from actual bugs in components.
-                (error) => {
-                    this.setState({
-                        isLoaded: true,
-                        error
-                    });
-                }
-            )
+        return api.deleteUser(user._id)
+            .then(() => {
+                const users = this.state.users;
+                const index = users.findIndex(m => m._id === user._id);
+                users.splice(index, 1)
+                this.setState({ users })
+            }, err => this.setState({ error: err.message }))
     }
 }
 

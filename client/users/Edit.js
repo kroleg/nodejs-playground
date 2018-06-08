@@ -11,7 +11,7 @@ class UsersEdit extends Component {
         return (
             <div>
                 <h1>Edit user</h1>
-                <Form purpose='updateUser' userId={this.userId} navigateTo={this.props.history.push}/>
+                <Form userId={this.userId} navigateTo={this.props.history.push}/>
             </div>
         );
     }
