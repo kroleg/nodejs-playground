@@ -16,7 +16,7 @@ module.exports = {
                 dbSearchQuery.time = { $gte: req.query.timeFrom, $lte: req.query.timeTo };
             }
             const meals = await Meal.find(dbSearchQuery)
-            res.send({ data: meals })
+            res.send(meals)
         } catch (err) {
             next(err)
         }

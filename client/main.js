@@ -106,16 +106,11 @@ class Navigation extends React.Component {
 
     clickLogout(event) {
         event.preventDefault()
-        fetch('/api/sessions', {
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/json',
-            },
-            credentials: "same-origin",
-        }).then(() => {
-            this.props.onLogout()
-            this.props.history.push('/login')
-        })
+        api.logout()
+            .then(() => {
+                this.props.onLogout()
+                this.props.history.push('/login')
+            })
     }
 }
 

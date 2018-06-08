@@ -31,6 +31,16 @@ const methods = {
         }
     },
 
+    async logout () {
+        return fetch('/api/sessions', {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+            },
+            credentials: "same-origin",
+        })
+    },
+
     async createUser (data) {
         const res = await fetch('/api/users', {
             ...defaultOptions,
@@ -53,6 +63,35 @@ const methods = {
             const respBody = await res.json();
             throw new Error(respBody.error)
         }
+    },
+
+    createMeal (userId, data) {
+        return fetch(`/api/users/${userId}/meals`, {
+            ...defaultOptions,
+            method: 'POST',
+            body: JSON.stringify(data),
+        })
+    },
+
+    updateMeal (userId, mealId, data) {
+        return fetch(`/api/users/${userId}/meals/${mealId}`, {
+            ...defaultOptions,
+            method: 'PUT',
+            body: JSON.stringify(data),
+        })
+    },
+
+    readMeal (userId, mealId) {
+        return fetch(`/api/users/${userId}/meals/${mealId}`, defaultOptions).then(res => res.json())
+    },
+
+    listMeals (userId, query = {}) {
+        const qs = Object.keys(query).map(key => key + '=' + query[key]).join('&')
+        return fetch(`/api/users/${userId}/meals` + (qs ? '?' + qs : ''), defaultOptions).then(res => res.json())
+    },
+
+    deleteMeal (userId, mealId) {
+        return fetch(`/api/users/${userId}/meals/${mealId}`, { ...defaultOptions, method: 'DELETE' })
     },
 
 }

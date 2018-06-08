@@ -4,14 +4,15 @@ import Form from './components/Form'
 class MealsEdit extends Component {
     constructor (props) {
         super(props)
-        this.mealId = window.location.pathname.match(/meals\/(.*)+\/edit/)[1]
+        this.mealId = this.props.match.params.mealId
+        this.userId = this.props.match.params.userId || 'me'
     }
 
     render() {
         return (
             <div>
                 <h1>Edit meal</h1>
-                <Form submitUrl={`/api/users/me/meals/${this.mealId}`} submitMethod='PUT' mealId={this.mealId} navigateTo={this.props.history.push}/>
+                <Form userId={this.mealId} mealId={this.mealId} navigateTo={this.props.history.push}/>
             </div>
         );
     }

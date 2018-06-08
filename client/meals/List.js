@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import moment from 'moment'
 import DateTime from 'react-datetime'
+import api from '../api'
 
 class List extends Component {
     constructor (props) {
@@ -19,7 +20,6 @@ class List extends Component {
         this.searchMeals = this.searchMeals.bind(this)
         this.deleteMeal = this.deleteMeal.bind(this)
         this.userId = this.props.match.params.userId || 'me'
-        this.apiBaseUrl = `/api/users/${this.userId}/meals`
         this.baseUrl = this.userId === 'me' ? '/meals' : `/users/${this.userId}/meals`
     }
 
@@ -81,25 +81,7 @@ class List extends Component {
             query.timeFrom = this.state.timeFrom - this.state.timeFrom.clone().startOf('day')
             query.timeTo = this.state.timeTo - this.state.timeTo.clone().startOf('day')
         }
-        const qs = Object.keys(query).map(key => key + '=' + query[key]).join('&')
-        return fetch(this.apiBaseUrl + (qs ? '?' + qs : ''), { credentials: "same-origin" })
-            .then(res => {
-                if (res.status === 403) {
-                    throw new Error('auth')
-                }
-                return res.json()
-            })
-            .then(
-                (result) => {
-                    this.setState({ meals: result.data })
-                },
-                // Note: it's important to handle errors here
-                // instead of a catch() block so that we don't swallow
-                // exceptions from actual bugs in components.
-                (error) => {
-                    // this.props.history.push('/login')
-                }
-            )
+        api.listMeals(this.userId, query).then(meals => this.setState({ meals }))
     }
 
     onFiltersChange(prop, newValue) {
@@ -121,51 +103,20 @@ class List extends Component {
 
     componentDidMount() {
         document.title = 'Meals';
-        return fetch(this.apiBaseUrl, { credentials: "same-origin" })
-            .then(res => {
-                if (res.status !== 200) {
-                    this.props.history.push('/login')
-                }
-                return res.json()
-            })
-            .then(
-                (result) => {
-                    this.setState({ meals: result.data })
-                },
-                // Note: it's important to handle errors here
-                // instead of a catch() block so that we don't swallow
-                // exceptions from actual bugs in components.
-                (error) => {
-                    this.setState({
-                        isLoaded: true,
-                        error
-                    });
-                }
-            )
+        this.searchMeals()
     }
 
     deleteMeal(mealId) {
         if (!confirm(`Are you sure want to delete this meal?`)) {
             return
         }
-        return fetch(`${this.apiBaseUrl}/${mealId}`, { credentials: "same-origin", method: 'DELETE' })
-            .then(
-                () => {
-                    const meals = this.state.meals;
-                    const index = meals.findIndex(m => m._id === mealId);
-                    meals.splice(index, 1)
-                    this.setState({ meals })
-                },
-                // Note: it's important to handle errors here
-                // instead of a catch() block so that we don't swallow
-                // exceptions from actual bugs in components.
-                (error) => {
-                    this.setState({
-                        isLoaded: true,
-                        error
-                    });
-                }
-            )
+        api.deleteMeal(this.userId, mealId)
+            .then(() => {
+                const meals = this.state.meals;
+                const index = meals.findIndex(m => m._id === mealId);
+                meals.splice(index, 1)
+                this.setState({ meals })
+            })
     }
 }
 

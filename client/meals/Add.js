@@ -4,13 +4,14 @@ import Form from './components/Form'
 class MealsAdd extends Component {
     constructor (props) {
         super(props)
+        this.userId = this.props.match.params.userId || 'me'
     }
 
     render() {
         return (
             <div>
                 <h1>Add meal</h1>
-                <Form submitUrl='/api/users/me/meals' navigateTo={this.props.history.push}/>
+                <Form userId={this.userId} navigateTo={this.props.history.push}/>
             </div>
         );
     }

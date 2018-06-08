@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import DateTime from 'react-datetime'
 import moment from 'moment'
+import api from '../../api'
 
 class Form extends Component {
     constructor (props) {
@@ -16,7 +17,7 @@ class Form extends Component {
 
     render() {
         return (
-            <form action={this.props.submitUrl} method='POST' className={this.props.className} onSubmit={(e) => this.handleSubmit(e)} noValidate>
+            <form className={this.props.className} onSubmit={(e) => this.handleSubmit(e)} noValidate>
                 <div className="form-group">
                     <label htmlFor="exampleInputEmail1">Time and Date</label>
                     <DateTime value={this.state.datetime} input={false} viewMode={'time'}/>
@@ -39,19 +40,10 @@ class Form extends Component {
 
         const data = { ...this.state };
         data.date = data.datetime.clone().startOf('day').valueOf()
-        data.time = data.datetime - data.date
+        data.time = data.datetime - data.date;
 
-        fetch(this.props.submitUrl, {
-            method: this.props.submitMethod || 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data),
-            credentials: "same-origin",
-        }).then(() => {
-            this.props.navigateTo('/meals')
-        });
+        (this.props.mealId ? api.updateMeal(this.props.userId, this.props.mealId, data) : api.createMeal(this.props.userId, data))
+            .then(() => this.props.navigateTo('/meals'))
     }
 
     handleChange(event) {
@@ -62,22 +54,8 @@ class Form extends Component {
 
     componentDidMount() {
         if (this.props.mealId) {
-            return fetch(`/api/users/me/meals/${this.props.mealId}`, { credentials: "same-origin" })
-                .then(res => res.json())
-                .then(
-                    (result) => {
-                        this.setState(result)
-                    },
-                    // Note: it's important to handle errors here
-                    // instead of a catch() block so that we don't swallow
-                    // exceptions from actual bugs in components.
-                    (error) => {
-                        this.setState({
-                            isLoaded: true,
-                            error
-                        });
-                    }
-                )
+            api.readMeal(this.props.userId, this.props.mealId)
+                .then(meal => this.setState(meal))
         }
     }
 
