@@ -86,10 +86,7 @@ class App extends React.Component {
 
     getAllowedRoutes() {
         const result = [];
-        if (this.state.userRole === 'manager' || this.state.userRole === 'manager') {
-            result.push('users')
-        }
-        if (this.state.userRole === 'manager') {
+        if (this.state.userRole === 'manager' || this.state.userRole === 'admin') {
             result.push('users')
         }
         return result;
