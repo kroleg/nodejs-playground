@@ -28,8 +28,8 @@ class Login extends Component {
                     </div>
                     { this.state.error ? <div className='alert alert-danger' role="alert">{this.state.error}</div> : ''}
                     <button type="submit" className="btn btn-primary">Login</button>
+                    <p className='form_footnote'>If you don't have an account you can <a href="/signup">signup</a></p>
                 </form>
-                <p className='login_footnote'>If you don't have an account you can <a href="/signup">signup</a></p>
             </div>
         );
     }

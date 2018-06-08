@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import api from '../../api'
 
 class Form extends Component {
     constructor (props) {
@@ -37,22 +38,19 @@ class Form extends Component {
             data.password = event.target.elements.password.value;
         }
 
-        fetch(this.props.submitUrl, {
-            method: this.props.submitMethod || 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data),
-            credentials: "same-origin",
-        }).then(async res => {
-            if (res.status === 200) {
-                this.props.navigateTo('/users')
-            } else {
-                const respBody = await res.json();
-                this.setState({ error: respBody.error })
-            }
-        });
+        let work;
+        if (this.props.purpose === 'createUser') {
+            work = api.createUser(data)
+
+        } else if (this.props.purpose === 'updateUser') {
+            work = api.updateUser(this.props.userId, data)
+        } else {
+            console.error('Form has incorrect purpose:', this.props.purpose)
+            return
+        }
+
+        work.then(() => this.props.navigateTo('/users'))
+            .catch(err => this.setState({ error: err.message }))
     }
 
     handleChange(event) {

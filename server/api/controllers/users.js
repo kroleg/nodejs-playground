@@ -19,18 +19,30 @@ module.exports = {
 
     async create(req, res, next) {
         try {
+            // normalize
+            req.body.email = req.body.email.trim()
+
+            // check validity
             if (!req.body.password) {
                 return res.status(400).send({ error: 'Password is required' })
             }
-            req.body.email = req.body.email.trim()
             if (!req.body.email.match(/.*@.*\..*/)) {
                 return res.status(400).send({ error: 'Email should be in format user@example.com' })
             }
+
             const userData = { email: req.body.email, encryptedPassword: await encryptPassword(req.body.password) }
+
+            //check that email wasn't taken
             const existingUser = await User.findOne({ email: userData.email }).lean()
             if (existingUser) {
                 return res.status(422).send({ error: 'User with such email already exists' })
             }
+
+            // allow to set role only if user is create by admin or manager
+            if (req.user && ['admmin', 'manager'].includes(req.user.role)) {
+                userData.role = req.body.role
+            }
+
             const user = (await User.create(userData)).toObject();
             req.login(user, function (err) {
                 if (err) {

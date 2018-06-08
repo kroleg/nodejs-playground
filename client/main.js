@@ -34,7 +34,7 @@ class App extends React.Component {
             <Route render={props => this.state.loggedIn ? <Navigation allowedRoutes={this.getAllowedRoutes()} onLogout={this.onLogout} {...props} /> : '' } />
             <main>
                 <Route exact path='/' render={() => <Redirect to={this.state.loggedIn ? '/meals' : '/login' } /> } />
-                <Route exact path='/signup' component={Signup}/>
+                <Route exact path='/signup' render={props => this.state.loggedIn ? <Redirect to='/meals'/> : <Signup onRegister={this.onRegister} {...props} />}/>
                 <Route exact path='/login' render={props => this.state.loggedIn ? <Redirect to='/meals'/> : <Login onLogin={this.onLogin} {...props} />}/>
                 <Route exact path='/meals' render={props => <MealsList caloriesPerDay={this.state.caloriesPerDay} {...props} />} />
                 <Route exact path='/meals/add' component={MealsAdd}/>
@@ -77,6 +77,10 @@ class App extends React.Component {
     }
 
     onLogin() {
+        this.setState({ loggedIn: true })
+    }
+
+    onRegister() {
         this.setState({ loggedIn: true })
     }
 
