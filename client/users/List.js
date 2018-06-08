@@ -21,7 +21,7 @@ class List extends Component {
                             <td>{user._id}</td>
                             <td>{user.email}</td>
                             <td className='table-actions'>
-                                <Link to={`/users/${user._id}/meals`}>View meals</Link>
+                                {this.props.showMealsLink ? <Link to={`/users/${user._id}/meals`}>View meals</Link> : ''}
                                 <Link to={`/users/${user._id}/edit`}>Edit</Link>
                                 <a href='#' onClick={() => this.deleteUser(user._id)} className='link-danger'>Delete</a>
                             </td>

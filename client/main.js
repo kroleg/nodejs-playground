@@ -40,7 +40,7 @@ class App extends React.Component {
                 <Route exact path='/meals/add' component={MealsAdd}/>
                 <Route exact path='/meals/:mealId/edit' component={MealsEdit}/>
                 <Route exact path='/settings' render={props => <Settings onUpdate={this.onSettingsUpdate} {...props} />}/>
-                <Route exact path='/users' render={props => <UsersList caloriesPerDay={this.state.caloriesPerDay} {...props} />} />
+                <Route exact path='/users' render={props => <UsersList showMealsLink={this.state.userRole === 'admin'} caloriesPerDay={this.state.caloriesPerDay} {...props} />} />
                 <Route exact path='/users/:userId/edit' render={props => <UsersEdit {...props}/>} />
                 <Route exact path='/users/add' render={props => <UsersAdd {...props}/>} />
                 <Route exact path='/users/:userId/meals' render={props => <MealsList {...props}/>} />
