@@ -52,11 +52,11 @@ class Settings extends Component {
     }
 
     componentDidMount() {
-        return fetch(`/api/users/me/settings`, {credentials: "same-origin"})
+        return fetch(`/api/users/me`, {credentials: "same-origin"})
             .then(res => res.json())
             .then(
                 (result) => {
-                    this.setState(result)
+                    this.setState(result.settings)
                 },
                 // Note: it's important to handle errors here
                 // instead of a catch() block so that we don't swallow
