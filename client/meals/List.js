@@ -145,6 +145,9 @@ class List extends Component {
     }
 
     deleteMeal(mealId) {
+        if (!confirm(`Are you sure want to delete this meal?`)) {
+            return
+        }
         return fetch(`${this.apiBaseUrl}/${mealId}`, { credentials: "same-origin", method: 'DELETE' })
             .then(
                 () => {
@@ -230,7 +233,7 @@ class DayOfMeals extends React.Component {
                             <td>{m.note}</td>
                             <td className='table_actions table_actions--show-on-hover'>
                                 <Link to={`${this.props.baseUrl}/${m._id}/edit`}>Edit</Link>
-                                <a href='' onClick={() => this.props.deleteMeal(m._id)} className='link-danger'>Delete</a>
+                                <a href='' onClick={this.deleteClick.bind(this, m._id)} className='link-danger'>Delete</a>
                             </td>
                         </tr>
                     ))}
@@ -238,6 +241,11 @@ class DayOfMeals extends React.Component {
                 </table>
             </div>
         )
+    }
+
+    deleteClick (mealId, event) {
+        event.preventDefault();
+        this.props.deleteMeal(mealId)
     }
 }
 

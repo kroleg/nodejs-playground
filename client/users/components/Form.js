@@ -28,7 +28,7 @@ class Form extends Component {
                     <select name="role" className='form-control' value={this.state.role} onChange={this.handleChange}>
                         <option value="regular">Regular user</option>
                         <option value="manager">Manager (ability to add/update/remove users)</option>
-                        <option value="manager">Admin (ability to add/update/remove users and their meals)</option>
+                        <option value="admin">Admin (ability to add/update/remove users and their meals)</option>
                     </select>
                 </div>
                 { this.renderError() }

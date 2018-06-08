@@ -24,7 +24,7 @@ class List extends Component {
                             <td className='table_actions'>
                                 {this.props.showMealsLink ? <Link to={`/users/${user._id}/meals`}>View meals</Link> : ''}
                                 <Link to={`/users/${user._id}/edit`}>Edit</Link>
-                                <a href='#' onClick={() => this.deleteUser(user._id)} className='link-danger'>Delete</a>
+                                <a href='#' onClick={this.clickDelete.bind(this, user)} className='link-danger'>Delete</a>
                             </td>
                         </tr>
                     ))}
@@ -60,7 +60,12 @@ class List extends Component {
             )
     }
 
-    deleteUser(userId) {
+    clickDelete(user, event) {
+        event.preventDefault()
+        if (!confirm(`Are you sure want to delete user ${user.email}?`)) {
+            return
+        }
+        const userId = user._id
         return fetch(`/api/users/${userId}`, { credentials: "same-origin", method: 'DELETE' })
             .then(
                 () => {
