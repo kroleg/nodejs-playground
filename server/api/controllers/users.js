@@ -45,7 +45,7 @@ module.exports = {
             }
 
             await User.create(userData)
-            res.status(200).end()
+            res.send({})
 
         } catch (err) {
             next(err)

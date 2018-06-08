@@ -26,7 +26,7 @@ module.exports = {
         try {
             const user = await getUser(req);
             await Meal.create({ ...req.body, user: user._id });
-            res.status(200).end()
+            res.send({})
         } catch (err) {
             next(err)
         }
@@ -47,7 +47,7 @@ module.exports = {
             const newProps = req.body;
             // delete req.body._id;
             await Meal.findOneAndUpdate({ _id: req.params.mealId }, newProps);
-            res.status(200).end()
+            res.send({})
         } catch (err) {
             next(err)
         }
@@ -56,7 +56,7 @@ module.exports = {
     async delete (req, res, next) {
         try {
             await Meal.remove({ _id: req.params.mealId });
-            res.status(200).end()
+            res.send({})
         } catch (err) {
             next(err)
         }

@@ -9,7 +9,7 @@ module.exports = {
             const newProps = req.body;
             delete req.body.user;
             await Setting.findOneAndUpdate({ user: req.user._id }, newProps).select('caloriesPerDay').lean();
-            res.status(200).end()
+            res.send({})
         } catch (err) {
             next(err)
         }

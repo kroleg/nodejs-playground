@@ -27,6 +27,6 @@ module.exports = {
 
     delete (req, res, next) {
         req.logout();
-        res.status(200).end();
+        res.send({});
     }
 }
