@@ -11,6 +11,7 @@ import Settings from './pages/Settings'
 import UsersList from './users/List'
 import UsersEdit from './users/Edit'
 import UsersAdd from './users/Add'
+import api from './api'
 
 class App extends React.Component {
     constructor (props) {
@@ -22,8 +23,8 @@ class App extends React.Component {
             userRole: 'regular'
         }
         this.onSettingsUpdate = this.onSettingsUpdate.bind(this)
-        this.onLogin = this.onLogin.bind(this)
         this.onLogout = this.onLogout.bind(this)
+        this.getAuthState = this.getAuthState.bind(this)
     }
 
     render () {
@@ -34,8 +35,8 @@ class App extends React.Component {
             <Route render={props => this.state.loggedIn ? <Navigation allowedRoutes={this.getAllowedRoutes()} onLogout={this.onLogout} {...props} /> : '' } />
             <main>
                 <Route exact path='/' render={() => <Redirect to={this.state.loggedIn ? '/meals' : '/login' } /> } />
-                <Route exact path='/signup' render={props => this.state.loggedIn ? <Redirect to='/meals'/> : <Signup onRegister={this.onRegister} {...props} />}/>
-                <Route exact path='/login' render={props => this.state.loggedIn ? <Redirect to='/meals'/> : <Login onLogin={this.onLogin} {...props} />}/>
+                <Route exact path='/signup' render={props => this.state.loggedIn ? <Redirect to='/meals'/> : <Signup onRegistered={this.getAuthState} {...props} />}/>
+                <Route exact path='/login' render={props => this.state.loggedIn ? <Redirect to='/meals'/> : <Login onLoggedIn={this.getAuthState} {...props} />}/>
                 <Route exact path='/meals' render={props => <MealsList caloriesPerDay={this.state.caloriesPerDay} {...props} />} />
                 <Route exact path='/meals/add' component={MealsAdd}/>
                 <Route exact path='/meals/:mealId/edit' component={MealsEdit}/>
@@ -48,44 +49,30 @@ class App extends React.Component {
         </div>)
     }
 
-    componentDidMount() {
-        fetch('/api/users/me', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            },
-            credentials: "same-origin",
-        }).then(res => {
-            this.setState({ checkingLoginStatus: false })
-            if (res.status === 200) {
-                this.setState({ loggedIn: true })
-                return res.json()
-            }
-            else {
+    getAuthState() {
+        api.getCurrentUser()
+            .then(async (user) => {
+                this.setState({
+                    loggedIn: true,
+                    checkingLoginStatus: false,
+                    caloriesPerDay: user.settings ? user.settings.caloriesPerDay : null,
+                    userRole: user.role,
+                })
+            }, () => {
                 this.setState({ loggedIn: false })
-            }
-        }).then(user => {
-            this.setState({
-                caloriesPerDay: user.settings.caloriesPerDay,
-                userRole: user.role,
             })
-        });
+    }
+
+    componentDidMount() {
+        this.getAuthState()
     }
 
     onSettingsUpdate(settings) {
         this.setState({ caloriesPerDay: settings.caloriesPerDay })
     }
 
-    onLogin() {
-        this.setState({ loggedIn: true })
-    }
-
-    onRegister() {
-        this.setState({ loggedIn: true })
-    }
-
     onLogout() {
-        this.setState({ loggedIn: false })
+        this.setState({ loggedIn: false, userRole: 'regular' })
     }
 
     getAllowedRoutes() {

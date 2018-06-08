@@ -10,6 +10,14 @@ const defaultOptions = {
 const methods = {
 
 
+    async getCurrentUser () {
+        return fetch('/api/users/me', defaultOptions).then(res => {
+            if (res.status === 200) {
+                return res.json()
+            }
+            throw new Error('Failed ') // text doesn't because not used in consumer
+        })
+    },
 
     async login (credentials) {
         const res = await fetch('/api/sessions', {

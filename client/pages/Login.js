@@ -47,7 +47,7 @@ class Login extends Component {
             credentials: "same-origin",
         }).then(async res => {
             if (res.status === 200) {
-                this.props.onLogin()
+                this.props.onLoggedIn()
                 this.props.history.push('/meals')
             } else {
                 const respBody = await res.json();

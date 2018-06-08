@@ -38,7 +38,7 @@ class Signup extends Component {
         }
         api.createUser(data)
             .then(() => api.login(data))
-            .then(() => this.props.onRegister())
+            .then(() => this.props.onRegistered())
             .catch(err => this.setState({ error: err.message }))
 
     }
