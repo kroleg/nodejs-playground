@@ -1,0 +1,67 @@
+body {
+    /*width: 350px;*/
+    padding: 10px;
+    font-size: 16px;
+}
+
+.link-danger,
+.link-danger:hover {
+    color: red;
+}
+.filters {
+    font-size: 0.9em;
+}
+table td, table th {
+    padding: 2px 5px;
+}
+nav a {
+    margin-right: 10px;
+}
+
+/**
+special styling for datetime picker
+ */
+.rdt,
+.rdt:first-child {
+    display: inline-block;
+}
+.rdt .btn {
+    padding: 0 2px;
+    font-size: inherit;
+    height: auto;
+    vertical-align: baseline;
+}
+
+/**
+because jsx removes whitespaces between tags we need to space elements manually
+ */
+.table_actions a {
+    margin-left: 10px;
+    display: inline-block;
+}
+.table_actions a:first-child {
+    margin-left: 0;
+}
+
+/**
+show action buttons in meals table only on row hover to make table look prettier
+ */
+.table_actions--show-on-hover a {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+tr:hover .table_actions--show-on-hover a {
+    opacity: 1
+}
+
+
+
+.day-ok .day-date {
+    color: green;
+}
+.day-fail .day-date {
+    color: #dc3545;
+}
+.day-date {
+    font-weight: bold;
+}

@@ -227,9 +227,9 @@ class DayOfMeals extends React.Component {
                             <td>{moment(m.time + m.date).format('H:m')}</td>
                             <td>{m.calories}</td>
                             <td>{m.note}</td>
-                            <td className='meals-actions'>
-                                <Link to={`${this.baseUrl}/${m._id}/edit`} className='btn btn-link'>Edit</Link>
-                                <button onClick={() => this.props.deleteMeal(m._id)} className='btn btn-link btn-danger'>Delete</button>
+                            <td className='table_actions table_actions--show-on-hover'>
+                                <Link to={`${this.baseUrl}/${m._id}/edit`}>Edit</Link>
+                                <a href='' onClick={() => this.props.deleteMeal(m._id)} className='link-danger'>Delete</a>
                             </td>
                         </tr>
                     ))}
