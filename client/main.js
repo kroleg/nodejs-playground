@@ -19,7 +19,7 @@ class App extends React.Component {
         this.state = {
             caloriesPerDay: 0,
             loggedIn: false,
-            userRole: 'regular'
+            currentUser: null
         }
         this.onSettingsUpdate = this.onSettingsUpdate.bind(this)
         this.onLogout = this.onLogout.bind(this)
@@ -28,7 +28,7 @@ class App extends React.Component {
 
     render () {
         return (<div>
-            <Route render={props => this.state.loggedIn ? <Navigation allowedRoutes={this.getAllowedRoutes()} onLogout={this.onLogout} {...props} /> : '' } />
+            <Route render={props => this.state.loggedIn ? <Navigation currentUser={this.state.currentUser} allowedRoutes={this.getAllowedRoutes()} onLogout={this.onLogout} {...props} /> : '' } />
             <main>
                 <Route exact path='/' render={() => <Redirect to={this.state.loggedIn ? '/meals' : '/login' } /> } />
                 <Route exact path='/signup' render={props => this.state.loggedIn ? <Redirect to='/meals'/> : <Signup onRegistered={this.getAuthState} {...props} />}/>
@@ -37,7 +37,7 @@ class App extends React.Component {
                 <Route exact path='/meals/add' component={MealsAdd}/>
                 <Route exact path='/meals/:mealId/edit' component={MealsEdit}/>
                 <Route exact path='/settings' render={props => <Settings onUpdate={this.onSettingsUpdate} {...props} />}/>
-                <Route exact path='/users' render={props => <UsersList showMealsLink={this.state.userRole === 'admin'} caloriesPerDay={this.state.caloriesPerDay} {...props} />} />
+                <Route exact path='/users' render={props => <UsersList showMealsLink={this.state.currentUser && this.state.currentUser.role === 'admin'} caloriesPerDay={this.state.caloriesPerDay} {...props} />} />
                 <Route exact path='/users/:userId/edit' render={props => <UsersEdit {...props}/>} />
                 <Route exact path='/users/add' render={props => <UsersAdd {...props}/>} />
                 <Route exact path='/users/:userId/meals' render={props => <MealsList {...props}/>} />
@@ -51,7 +51,7 @@ class App extends React.Component {
                 this.setState({
                     loggedIn: true,
                     caloriesPerDay: user.settings ? user.settings.caloriesPerDay : null,
-                    userRole: user.role,
+                    currentUser: user
                 })
             }, () => {
                 this.setState({ loggedIn: false })
@@ -67,12 +67,15 @@ class App extends React.Component {
     }
 
     onLogout() {
-        this.setState({ loggedIn: false, userRole: 'regular' })
+        this.setState({ loggedIn: false, currentUser:  null })
     }
 
     getAllowedRoutes() {
         const result = [];
-        if (this.state.userRole === 'manager' || this.state.userRole === 'admin') {
+        if (!this.state.currentUser) {
+            return [];
+        }
+        if (this.state.currentUser.role === 'manager' || this.state.currentUser.role === 'admin') {
             result.push('users')
         }
         return result;
@@ -92,7 +95,11 @@ class Navigation extends React.Component {
                 <Link to='/settings'>Settings</Link>
 
                 { this.props.allowedRoutes.includes('users') ? <Link to='/users'>Users</Link>  : '' }
-                <a href="/logout" onClick={this.clickLogout}>Logout</a>
+                <div className="nav_user-info">
+                    {this.props.currentUser.email + ' (' + this.props.currentUser.role + ') '}
+                    <a href="/logout" onClick={this.clickLogout}>Logout</a>
+                </div>
+
             </nav>
         )
     }

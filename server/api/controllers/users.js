@@ -44,13 +44,8 @@ module.exports = {
                 userData.role = req.body.role
             }
 
-            const user = (await User.create(userData)).toObject();
-            req.login(user, function (err) {
-                if (err) {
-                    return next(err);
-                }
-                res.send('ok');
-            });
+            await User.create(userData)
+            res.status(200).end()
 
         } catch (err) {
             next(err)
