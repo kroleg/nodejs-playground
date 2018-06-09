@@ -20,7 +20,7 @@ class Form extends Component {
             <form className={this.props.className} onSubmit={(e) => this.handleSubmit(e)} noValidate>
                 <div className="form-group">
                     <label htmlFor="exampleInputEmail1">Time and Date</label>
-                    <DateTime value={this.state.datetime} input={false} viewMode={'time'}/>
+                    <DateTime value={this.state.datetime} input={false} viewMode='time' onChange={m => this.dateTimeChange(m)}/>
                 </div>
                 <div className="form-group">
                     <label>Calories</label>
@@ -38,12 +38,13 @@ class Form extends Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        const data = { ...this.state };
-        data.date = data.datetime.clone().startOf('day').valueOf()
-        data.time = data.datetime - data.date;
+        const meal = { ...this.state };
+        meal.date = meal.datetime.clone().startOf('day').valueOf()
+        meal.time = meal.datetime - meal.date;
 
-        (this.props.mealId ? api.updateMeal(this.props.userId, this.props.mealId, data) : api.createMeal(this.props.userId, data))
-            .then(() => this.props.navigateTo('/meals'))
+
+        const work = this.props.mealId ? api.updateMeal(this.props.userId, this.props.mealId, meal) : api.createMeal(this.props.userId, meal)
+        work.then(() => this.props.navigateTo('/meals'))
     }
 
     handleChange(event) {
@@ -52,10 +53,19 @@ class Form extends Component {
         this.setState({ [event.target.name]: value });
     }
 
+    dateTimeChange(datetime) {
+        this.setState({ datetime })
+    }
+
     componentDidMount() {
         if (this.props.mealId) {
             api.readMeal(this.props.userId, this.props.mealId)
-                .then(meal => this.setState(meal))
+                .then(meal => {
+                    meal.datetime = moment(meal.date + meal.time)
+                    delete meal.date
+                    delete meal.time
+                    this.setState(meal)
+                })
         }
     }
 
