@@ -175,11 +175,11 @@ class DayOfMeals extends React.Component {
         return (
             <div className={containerClass}>
                 <div className='day-date'>{dateFormatted}</div>
-                <table>
+                <table className='table'>
                     <tbody>
                     { this.props.meals.map(m => (
                         <tr key={m.time + m.date}>
-                            <td>{moment(m.time + m.date).format('H:m')}</td>
+                            <td>{moment(m.time + m.date).format('H:mm')}</td>
                             <td>{m.calories}</td>
                             <td>{m.note}</td>
                             <td className='table_actions table_actions--show-on-hover'>
