@@ -3,12 +3,12 @@
 const chai = require('chai'),
     expect = chai.expect,
     chaiHttp = require('chai-http'),
-    api = require('../server');
+    api = require('../../server/index');
 
 chai.use(chaiHttp);
 
-const Meal = require('../server/api/models/meal');
-const User = require('../server/api/models/user');
+const Meal = require('../../server/api/models/meal');
+const User = require('../../server/api/models/user');
 
 describe('Meals', function () {
 

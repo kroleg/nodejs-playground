@@ -3,11 +3,11 @@
 const chai = require('chai'),
     expect = chai.expect,
     chaiHttp = require('chai-http'),
-    api = require('../server');
+    api = require('../../server/index');
 
 chai.use(chaiHttp);
 
-const User = require('../server/api/models/user');
+const User = require('../../server/api/models/user');
 const cookieName = 'connect.sid'
 
 describe('Auth', function () {
