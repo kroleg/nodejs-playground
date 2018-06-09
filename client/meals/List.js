@@ -15,10 +15,13 @@ class List extends Component {
             timeTo: moment(),
             useTimeFilter: false,
         }
+        this.dateFormat = 'MMM Do'
+        this.timeFormat = 'H:mm'
         this.onFiltersChange = this.onFiltersChange.bind(this)
         this.onFiltersTimeSelect = this.onFiltersTimeSelect.bind(this)
         this.searchMeals = this.searchMeals.bind(this)
         this.deleteMeal = this.deleteMeal.bind(this)
+        this.timeSelectChange = this.timeSelectChange.bind(this)
         this.userId = this.props.match.params.userId || 'me'
         this.baseUrl = this.userId === 'me' ? '/meals' : `/users/${this.userId}/meals`
     }
@@ -54,22 +57,47 @@ class List extends Component {
         return (
             <div>
                 <h1>Meals <Link to={this.baseUrl + '/add'}><small>Add</small></Link></h1>
-                <Filters
-                    dateFrom={this.state.dateFrom}
-                    dateTo={this.state.dateTo}
-                    timeFrom={this.state.timeFrom}
-                    timeTo={this.state.timeTo}
-                    useTimeFilter={this.state.useTimeFilter}
-                    onChangeFilterTime={this.onFiltersTimeSelect}
-                    onChange={this.onFiltersChange}
-                />
-                <button type='button' className='btn btn-primary' onClick={this.searchMeals}>Apply filters</button>
+                <div className='filters'>
+                    Dates: {this.renderDateTimePicker('dateFrom')} to {this.renderDateTimePicker('dateTo')}
+                    <select onChange={this.timeSelectChange} defaultValue={this.state.useTimeFilter === false ? 'no' : 'yes' }>
+                        <option value="no">Any time</option>
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="yes">Specified time</option>
+                    </select>
+                    {this.state.useTimeFilter ? <span>{this.renderDateTimePicker('timeFrom')} to {this.renderDateTimePicker('timeTo')}</span> : '' }
+                    <button type='button' className='btn btn-primary btn-sm' onClick={this.searchMeals}>Apply filters</button>
+                </div>
+
                 <div className="meals-list">
                     {mealsList}
                 </div>
 
             </div>
         );
+    }
+
+    timeSelectChange (event) {
+        const val = event.target.value
+        if (val === 'no') {
+            this.onFiltersTimeSelect(false)
+        } else if (val === 'yes') {
+            this.onFiltersTimeSelect(true)
+        } else {
+            this.onFiltersTimeSelect(val)
+        }
+    }
+
+    renderDateTimePicker (propName) {
+        const format = propName.startsWith('date') ? this.dateFormat : this.timeFormat;
+        return <DateTime
+            timeFormat={propName.startsWith('time')}
+            dateFormat={propName.startsWith('date')}
+            closeOnSelect={propName.startsWith('date')}
+            defaultValue={this.state[propName]}
+            renderInput={(props, openCalendar) => <button className='btn btn-link' type='button' onClick={openCalendar}>{this.state[propName].format(format)}</button>}
+            onChange={m => this.onFiltersChange(propName, m)}
+        />
     }
 
     searchMeals () {
@@ -120,53 +148,6 @@ class List extends Component {
     }
 }
 
-
-class Filters extends Component {
-    constructor (props) {
-        super(props)
-        this.dateFormat = 'MMM Do'
-        this.timeFormat = 'H:mm'
-        this.timeSelectChange = this.timeSelectChange.bind(this)
-    }
-
-    render() {
-        return (
-            <div className='filters'>
-                Dates: {this.renderDateTimePicker('dateFrom')} to {this.renderDateTimePicker('dateTo')} <br/>
-                <select onChange={this.timeSelectChange} defaultValue={this.props.useTimeFilter === false ? 'no' : 'yes' }>
-                    <option value="no">Any time</option>
-                    <option value="breakfast">Breakfast</option>
-                    <option value="lunch">Lunch</option>
-                    <option value="yes">Specified time</option>
-                </select>
-                {this.props.useTimeFilter ? <span>{this.renderDateTimePicker('timeFrom')} to {this.renderDateTimePicker('timeTo')}</span> : '' }
-            </div>
-        )
-    }
-
-    renderDateTimePicker (propName) {
-        const format = propName.startsWith('date') ? this.dateFormat : this.timeFormat;
-        return <DateTime
-            timeFormat={propName.startsWith('time')}
-            dateFormat={propName.startsWith('date')}
-            closeOnSelect={propName.startsWith('date')}
-            defaultValue={this.props[propName]}
-            renderInput={(props, openCalendar) => <button className='btn btn-link' type='button' onClick={openCalendar}>{this.props[propName].format(format)}</button>}
-            onChange={m => this.props.onChange(propName, m)}
-        />
-    }
-
-    timeSelectChange (event) {
-        const val = event.target.value
-        if (val === 'no') {
-            this.props.onChangeFilterTime(false)
-        } else if (val === 'yes') {
-            this.props.onChangeFilterTime(true)
-        } else {
-            this.props.onChangeFilterTime(val)
-        }
-    }
-}
 
 class DayOfMeals extends React.Component {
     render () {
