@@ -13,7 +13,7 @@ class Signup extends Component {
 
     render() {
         return (
-            <form onSubmit={e => this.handleSubmit(e)}>
+            <form onSubmit={e => this.handleSubmit(e)} noValidate>
                 <h1>Signup</h1>
                 <div className="form-group">
                     <label>Email address</label>
