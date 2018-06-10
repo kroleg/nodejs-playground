@@ -2,9 +2,11 @@
 
 const moment = require('moment');
 const today = moment().startOf('day')
+const { encryptPassword } = require('../server/api/controllers/helpers/password')
 
-// data generation here
-const sampleData = [];
+const User = require('../server/api/models/user');
+
+const meals = [];
 const regularDayMeals = [
     {
         calories: 300,
@@ -35,21 +37,9 @@ for (let i = 1; i <= 5; i++) {
         }
         return m
     })
-    sampleData.push(...dayMeals)
+    meals.push(...dayMeals)
 }
 // end of data generation
-
-const userId = process.argv[2];
-
-if (!userId) {
-    // const User = require('../server/api/models/user');
-    // find users and list their ids
-    console.error(`Please provide userId. Example: "node scripts/populate-db r1g5ak9MgQ"`)
-}
-
-sampleData.forEach(row => {
-    row.user = userId
-})
 
 const { mongoUrl } = require('../server/config')
 const mongoose = require('mongoose');
@@ -57,12 +47,27 @@ mongoose.connect(mongoUrl);
 
 const Meal = require('../server/api/models/meal');
 
-console.log(sampleData);
-
 Promise.resolve()
-    .then(() => Meal.remove({ user: userId }))
-    .then(() => Meal.create(sampleData))
+    .then(async () => {
+        await User.remove({})
+        const encryptedPassword = await encryptPassword('123456')
+        const users = ['admin', 'regular', 'manager'].map(role => ({
+            encryptedPassword, role, email: role + '@example.com'
+        }))
+        console.log(users)
+        await User.create(users)
+
+        const regularUser = await User.findOne({ role: 'regular' })
+        meals.forEach(row => {
+            row.user = regularUser._id
+        })
+        await Meal.create(meals)
+    })
     .then(() => {
         console.log('Done.')
+        process.exit()
+    })
+    .catch(err => {
+        console.error(err)
         process.exit()
     })
