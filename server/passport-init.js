@@ -31,5 +31,5 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
-    User.findById(id, done);
+    User.findOne({ _id: id }).select('-encryptedPassword').lean().exec(done);
 });
