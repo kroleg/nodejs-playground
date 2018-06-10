@@ -77,7 +77,7 @@ module.exports = {
         ensureType(mealId, 'string')
         ensureType(newProps, 'object')
         ensureType(expectStatus, 'number')
-        return requestApi(agent, 'put', `/api/users/${userId}/meals/${mealId}`, newProps, expectStatus)
+        return requestApi(agent, 'patch', `/api/users/${userId}/meals/${mealId}`, newProps, expectStatus)
     },
 
     async deleteMeal (agent, userId, mealId, expectStatus = 200) {
