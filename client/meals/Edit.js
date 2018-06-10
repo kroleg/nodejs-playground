@@ -12,7 +12,7 @@ class MealsEdit extends Component {
         return (
             <div>
                 <h1>Edit meal</h1>
-                <Form userId={this.mealId} mealId={this.mealId} navigateTo={this.props.history.push}/>
+                <Form userId={this.userId} mealId={this.mealId} navigateTo={this.props.history.push}/>
             </div>
         );
     }
