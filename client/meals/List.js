@@ -159,7 +159,7 @@ class DayOfMeals extends React.Component {
                 <table className='table'>
                     <tbody>
                     { this.props.meals.map(m => (
-                        <tr key={m.time + m.date}>
+                        <tr key={m._id}>
                             <td>{moment(m.time + m.date).format('H:mm')}</td>
                             <td>{m.calories}</td>
                             <td>{m.note}</td>
