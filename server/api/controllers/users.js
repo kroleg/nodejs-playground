@@ -89,10 +89,17 @@ module.exports = {
             delete userData._id;
             delete userData.role;
 
-            //check that email wasn't taken
-            const existingUser = await User.findOne({ email: userData.email }).lean()
-            if (existingUser) {
-                return res.status(422).send({ error: 'User with such email already exists' })
+            if (userData.email && !userData.email.match(/.*@.*\..*/)) {
+                return res.status(400).send({ error: 'Email should be in format user@example.com' })
+            }
+
+            const currentProps = await User.findOne({ _id: userId }).lean()
+            // if email was changed check that email wasn't taken
+            if (userData.email !== currentProps.email) {
+                const existingUser = await User.findOne({ email: userData.email }).lean()
+                if (existingUser) {
+                    return res.status(422).send({ error: 'User with such email already exists' })
+                }
             }
 
             // allow to set role only if user is create by admin or manager
