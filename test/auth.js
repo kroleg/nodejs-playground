@@ -20,7 +20,7 @@ describe('Auth', function () {
     describe('Signup', function () {
         it('should create user', async function () {
             const resp = await chai.request(api).post('/api/users').send(testUser)
-            expect(resp).to.have.status(200);
+            expect(resp).to.have.status(201);
             expect(await User.findOne({ email: testUser.email })).to.be.ok
         })
     })

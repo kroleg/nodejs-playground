@@ -1,21 +1,24 @@
 'use strict';
 
 const Meal = require('../models/meal');
-const User = require('../models/user');
+const authRules = require('../auth-rules')
 
 module.exports = {
 
     async list (req, res, next) {
         try {
-            const user = await getUser(req);
-            const dbSearchQuery = { user: user._id };
+            const mealsOwnerId = getMealOwnerId(req)
+            if (mealsOwnerId !== req.user._id && authRules.notAllowedToCRUDMeals(req.user)) {
+                return res.status(403).send({ error: 'Not allowed to create meal on behalf of other user'})
+            }
+            const dbSearchQuery = { user: mealsOwnerId };
             if (req.query.dateFrom) {
                 dbSearchQuery.date = { $gte: req.query.dateFrom, $lte: req.query.dateTo };
             }
             if (req.query.timeFrom) {
                 dbSearchQuery.time = { $gte: req.query.timeFrom, $lte: req.query.timeTo };
             }
-            const meals = await Meal.find(dbSearchQuery)
+            const meals = await Meal.find(dbSearchQuery).lean()
             res.send(meals)
         } catch (err) {
             next(err)
@@ -24,9 +27,12 @@ module.exports = {
 
     async create(req, res, next) {
         try {
-            const user = await getUser(req);
-            await Meal.create({ ...req.body, user: user._id });
-            res.send({})
+            const mealOwnerId = getMealOwnerId(req)
+            if (mealOwnerId !== req.user._id && authRules.notAllowedToCRUDMeals(req.user)) {
+                return res.status(403).send({ error: 'Not allowed to create meal on behalf of other user'})
+            }
+            const meal = await Meal.create({ ...req.body, user: mealOwnerId });
+            res.status(201).send({ mealId: meal._id })
         } catch (err) {
             next(err)
         }
@@ -34,9 +40,16 @@ module.exports = {
 
     async read(req, res, next) {
         try {
-            const meal = await Meal.findOne({ _id: req.params.mealId }).lean();
+            const mealOwnerId = getMealOwnerId(req)
+            const meal = await readMealByUser(req.params.mealId, mealOwnerId, req.user)
             res.send(meal)
         } catch (err) {
+            if (err.message.match(/not found/i)) {
+                return res.status(404).send({ error: 'Meal not found'})
+            }
+            if (err.message.match(/not allowed/i)) {
+                return res.status(403).send({ error: 'Not allowed to read meal on behalf of other user'})
+            }
             next(err)
         }
     },
@@ -44,37 +57,63 @@ module.exports = {
 
     async update (req, res, next) {
         try {
-            const newProps = req.body;
-            // delete req.body._id;
-            await Meal.findOneAndUpdate({ _id: req.params.mealId }, newProps);
+            const mealOwnerId = getMealOwnerId(req)
+            const meal = await readMealByUser(req.params.mealId, mealOwnerId, req.user)
+            const newProps = { ...req.body };
+            delete newProps._id;
+            await Meal.findOneAndUpdate({ _id: meal._id }, newProps);
             res.send({})
         } catch (err) {
+            if (err.message.match(/not found/i)) {
+                return res.status(404).send({ error: 'Meal not found'})
+            }
+            if (err.message.match(/not allowed/i)) {
+                return res.status(403).send({ error: 'Not allowed to update meal on behalf of other user'})
+            }
             next(err)
         }
     },
 
     async delete (req, res, next) {
         try {
-            await Meal.remove({ _id: req.params.mealId });
+            const mealOwnerId = getMealOwnerId(req)
+            const meal = await readMealByUser(req.params.mealId, mealOwnerId, req.user)
+            await Meal.remove({ _id: meal._id });
             res.send({})
         } catch (err) {
+            if (err.message.match(/not found/i)) {
+                return res.status(404).send({ error: 'Meal not found'})
+            }
+            if (err.message.match(/not allowed/i)) {
+                return res.status(403).send({ error: 'Not allowed to delete meal on behalf of other user'})
+            }
             next(err)
         }
     },
 }
 
-
-async function getUser(req) {
-    if (req.params.userId === 'me') {
-        if (!req.user) {
-            throw new Error('no user authenticated')
-        }
-        return req.user ;
-    } else {
-        const user = await User.findOne({ _id: req.params.userId });
-        if (!user) {
-            throw new Error('user not found')
-        }
-        return user;
+function getMealOwnerId (req) {
+    let mealOwnerId = req.params.userId
+    if (mealOwnerId === 'me') {
+        mealOwnerId = req.user._id
     }
+    return mealOwnerId
+}
+
+/**
+ *
+ * @param mealId
+ * @param mealOwnerId
+ * @param user
+ * @returns {Promise<void>}
+ */
+async function readMealByUser (mealId, mealOwnerId, user) {
+    const meal = await Meal.findOne({ _id: mealId, user: mealOwnerId }).lean();
+    if (!meal) {
+        throw new Error('not found')
+    }
+    if (meal.user !== user._id && authRules.notAllowedToCRUDMeals(user)) {
+        throw new Error('not allowed')
+    }
+    return meal
 }
