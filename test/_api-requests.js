@@ -14,10 +14,12 @@ module.exports = {
     /**
      * @returns {TestAgent}
      */
-    async login (agent, user) {
+    async login (agent, user, expectedStatus = 200) {
         const loginResp = await agent.post('/api/sessions').send(user)
-        expect(loginResp).to.have.status(200);
-        expect(loginResp).to.have.cookie(sessionCookieName);
+        expect(loginResp).to.have.status(expectedStatus);
+        if (expectedStatus === 200) {
+            expect(loginResp).to.have.cookie(sessionCookieName);
+        }
     },
 
     async createUser (agent, userData, role, expectStatus = 201) {
@@ -94,6 +96,9 @@ async function requestApi(agent, method, url, body, expectedStatus) {
         req.send(body)
     }
     const res = await req
+    if (res.status !== expectedStatus) {
+        console.error(method, url)
+    }
     expect(res).to.have.status(expectedStatus)
     return res.body
 }

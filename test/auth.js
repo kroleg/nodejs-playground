@@ -3,12 +3,12 @@
 const chai = require('chai'),
     expect = chai.expect,
     chaiHttp = require('chai-http'),
-    api = require('../server/index');
+    api = require('../server/index'),
+    { login, createUser, readUser } = require('./_api-requests');
 
 chai.use(chaiHttp);
 
 const User = require('../server/api/models/user');
-const cookieName = 'connect.sid'
 const testUser = { email: 'user@example.com', password: '123456' };
 
 describe('Auth', function () {
@@ -18,9 +18,9 @@ describe('Auth', function () {
     })
 
     describe('Signup', function () {
+
         it('should create user', async function () {
-            const resp = await chai.request(api).post('/api/users').send(testUser)
-            expect(resp).to.have.status(201);
+            await createUser(chai.request(api), testUser)
             expect(await User.findOne({ email: testUser.email })).to.be.ok
         })
     })
@@ -28,19 +28,18 @@ describe('Auth', function () {
     describe('Login & logout', function () {
         const agent = chai.request.agent(api)
 
+        after(() => agent.close())
+
         it('should login', async function () {
-            const loginResp = await agent.post('/api/sessions').send(testUser)
-            expect(loginResp).to.have.status(200);
-            expect(loginResp).to.have.cookie(cookieName);
-            const userResp = await agent.get('/api/users/me')
-            expect(userResp).to.have.status(200);
-            expect(userResp.body).to.have.property('email');
+
+            await login(agent, testUser)
+            const userData = await readUser(agent, 'me')
+            expect(userData).to.have.property('email');
         })
 
         it('should not login with wrong password', async function () {
             const incorrectCredentials = { ...testUser, password: 'wrong password'}
-            const loginResp = await agent.post('/api/sessions').send(incorrectCredentials)
-            expect(loginResp).to.have.status(401);
+            await login(chai.request(api), incorrectCredentials, 401)
         })
 
         it('should logout', async function () {

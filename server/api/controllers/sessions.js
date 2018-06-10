@@ -18,7 +18,7 @@ module.exports = {
                 if (err) {
                     return next(err);
                 }
-                res.send('ok');
+                res.send({});
             })
         } catch (err) {
             next(err)
