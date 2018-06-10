@@ -37,6 +37,12 @@ describe('Auth', function () {
             expect(userResp.body).to.have.property('email');
         })
 
+        it('should not login with wrong password', async function () {
+            const incorrectCredentials = { ...testUser, password: 'wrong password'}
+            const loginResp = await agent.post('/api/sessions').send(incorrectCredentials)
+            expect(loginResp).to.have.status(401);
+        })
+
         it('should logout', async function () {
             const logoutResp = await agent.delete('/api/sessions')
             expect(logoutResp).to.have.status(200);
