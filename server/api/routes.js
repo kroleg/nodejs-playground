@@ -5,8 +5,7 @@ module.exports = api;
 
 const mealsController = require('./controllers/meals'),
     usersController = require('./controllers/users'),
-    sessionsController = require('./controllers/sessions'),
-    settingsController = require('./controllers/settings');
+    sessionsController = require('./controllers/sessions');
 
 api.use(function (req, res, next) {
     if ((req.path.match(/sessions/) || req.path === '/users') && req.method === 'POST') {
@@ -28,11 +27,7 @@ api.route('/users')
 api.route("/users/:userId")
     .get(usersController.read)
     .delete(usersController.delete)
-    .put(usersController.update);
-
-
-api.route('/users/me/settings')
-    .put(settingsController.update);
+    .patch(usersController.update);
 
 api.route('/users/:userId/meals')
     .get(mealsController.list)
@@ -40,7 +35,7 @@ api.route('/users/:userId/meals')
 api.route('/users/:userId/meals/:mealId')
     .get(mealsController.read)
     .delete(mealsController.delete)
-    .put(mealsController.update);
+    .patch(mealsController.update);
 
 api.use(function(req, res, next) {
     res.status(404).send()

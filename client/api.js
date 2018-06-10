@@ -10,7 +10,7 @@ const defaultOptions = {
 function fetchOrThrow (url, options = defaultOptions) {
     return fetch(url, options).then(async res => {
         const body = await res.json()
-        if (res.status === 200) {
+        if (res.status === 200 || res.status === 201) {
             return body
         }
         //todo better handle 401 = no rights, 403 = no auth
@@ -50,7 +50,7 @@ const methods = {
     },
 
     updateUser (userId, data) {
-        return fetchOrThrow(`/api/users/${userId}`, {...defaultOptions, method: 'PUT', body: JSON.stringify(data)})
+        return fetchOrThrow(`/api/users/${userId}`, {...defaultOptions, method: 'PATCH', body: JSON.stringify(data)})
     },
 
     readUser (userId) {
@@ -70,7 +70,7 @@ const methods = {
     },
 
     updateMeal (userId, mealId, data) {
-        return fetchOrThrow(`/api/users/${userId}/meals/${mealId}`, {...defaultOptions, method: 'PUT', body: JSON.stringify(data)})
+        return fetchOrThrow(`/api/users/${userId}/meals/${mealId}`, {...defaultOptions, method: 'PATCH', body: JSON.stringify(data)})
     },
 
     readMeal (userId, mealId) {

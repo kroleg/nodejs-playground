@@ -118,6 +118,21 @@ describe('Users', function () {
         it('should not allow to delete self', async function () {
             await deleteUser(regularUserAgent, regularUser._id, 422)
         })
+
+        it('should return settings', async function () {
+            const userData = await readUser(regularUserAgent, regularUser._id)
+            expect(userData).to.have.nested.property('settings.caloriesPerDay')
+        })
+
+        it('should update settings', async function () {
+            const caloriesPerDay = 111
+            await updateUser(regularUserAgent, regularUser._id, { settings: { caloriesPerDay }})
+            const userData = await readUser(regularUserAgent, regularUser._id)
+            expect(userData).to.have.nested.property('settings.caloriesPerDay', caloriesPerDay)
+            expect(userData).to.have.property('email')
+            expect(userData).to.have.property('role', 'regular')
+        })
+
     })
 
 });

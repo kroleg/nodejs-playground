@@ -6,7 +6,6 @@ class Settings extends Component {
         this.state = {
             caloriesPerDay: ''
         }
-        this.submitUrl = '/api/users/me/settings'
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleChange = this.handleChange.bind(this)
     }
@@ -15,7 +14,7 @@ class Settings extends Component {
         return (
             <div>
                 <h1>Settings</h1>
-                <form action={this.submitUrl} method='PUT' onSubmit={(e) => this.handleSubmit(e)} noValidate>
+                <form onSubmit={(e) => this.handleSubmit(e)} noValidate>
                     <div className="form-group">
                         <label>Calories per day</label>
                         <input type="text" className="form-control" name='caloriesPerDay'
@@ -31,13 +30,13 @@ class Settings extends Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        fetch(this.submitUrl, {
-            method: 'PUT',
+        fetch('/api/users/me', {
+            method: 'PATCH',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(this.state),
+            body: JSON.stringify({ settings: this.state }),
             credentials: "same-origin",
         }).then(() => {
             this.props.onUpdate(this.state)

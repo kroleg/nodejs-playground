@@ -16,6 +16,12 @@ const schema = new Schema(
             default: 'regular',
             enum: ['regular', 'manager', 'admin']
         },
+        settings: {
+            caloriesPerDay: {
+                type: Number,
+                default: null
+            }
+        }
     },
     {
         strict: true,

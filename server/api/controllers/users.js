@@ -2,7 +2,6 @@
 
 const User = require('../models/user');
 const Meal = require('../models/meal');
-const Setting = require('../models/setting');
 const { encryptPassword } = require('./helpers/password');
 const authRules = require('../auth-rules')
 
@@ -66,7 +65,7 @@ module.exports = {
             }
 
             const user = await User.findOne({ _id: userId }).select('-encryptedPassword').lean()
-            user.settings = await Setting.findOne({ user: userId }).select('-_id -user').lean()
+
             if (!user) {
                 return res.status(404).send({ error: `User ${userId} not found` })
             }
@@ -97,10 +96,10 @@ module.exports = {
             }
 
             // allow to set role only if user is create by admin or manager
-            if (['admin', 'manager'].includes(req.user.role)) {
+            if (req.body.role && ['admin', 'manager'].includes(req.user.role)) {
                 userData.role = req.body.role
             }
-            const user = await User.findOneAndUpdate({ _id: userId }, userData, { new: true }).select('email').lean()
+            const user = await User.findOneAndUpdate({ _id: userId }, userData, { new: true }).select('-encryptedPassword').lean()
             if (!user) {
                 return res.status(404).send({ error: `User ${userId} not found` })
             }

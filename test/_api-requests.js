@@ -44,7 +44,7 @@ module.exports = {
         ensureType(userId, 'string')
         ensureType(newProps, 'object')
         ensureType(expectStatus, 'number')
-        return requestApi(agent, 'put', `/api/users/${userId}`, newProps, expectStatus)
+        return requestApi(agent, 'patch', `/api/users/${userId}`, newProps, expectStatus)
     },
 
     async deleteUser (agent, userId, expectStatus = 200) {
