@@ -19,7 +19,7 @@ const schema = new Schema(
         settings: {
             caloriesPerDay: {
                 type: Number,
-                default: null
+                default: 0
             }
         }
     },

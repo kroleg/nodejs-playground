@@ -50,7 +50,7 @@ class App extends React.Component {
             .then(async (user) => {
                 this.setState({
                     loggedIn: true,
-                    caloriesPerDay: user.settings ? user.settings.caloriesPerDay : null,
+                    caloriesPerDay: user.settings ? user.settings.caloriesPerDay : '',
                     currentUser: user
                 })
             }, () => {

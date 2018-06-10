@@ -19,6 +19,7 @@ class Settings extends Component {
                         <label>Calories per day</label>
                         <input type="text" className="form-control" name='caloriesPerDay'
                                placeholder="Expected number of calories per day" value={this.state.caloriesPerDay} onChange={this.handleChange}/>
+                        <small className="form-text text-muted">Set to 0 or negative to disable.</small>
                     </div>
                     <button type="submit" className="btn btn-primary">Save</button>
                 </form>
