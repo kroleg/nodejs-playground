@@ -91,7 +91,7 @@ class Navigation extends React.Component {
     render () {
         return (
             <nav className="navbar-light bg-light">
-                <Link to='/meals'>Meals</Link>
+                <Link to='/meals'>My meals</Link>
                 <Link to='/settings'>Settings</Link>
 
                 { this.props.allowedRoutes.includes('users') ? <Link to='/users'>Users</Link>  : '' }
