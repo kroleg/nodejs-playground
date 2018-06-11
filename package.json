@@ -4,7 +4,11 @@
   "description": "",
   "private": true,
   "scripts": {
-    "test": "mocha --exit"
+    "test": "mocha --exit",
+    "webpack:dev": "webpack --mode development --watch",
+    "start:dev": "nodemon server/",
+    "webpack": "webpack --mode production",
+    "start": "node server/"
   },
   "nodemonConfig": {
     "ignore": [
