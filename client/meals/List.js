@@ -41,6 +41,7 @@ class List extends Component {
         uniqueDates.sort((a, b) => b - a) // sor desc
         for (let date of Object.keys(mealsByDay)) {
             const dayCalories = mealsByDay[date].meals.reduce((sum, m) => sum + m.calories, 0)
+            mealsByDay[date].totalCalories = dayCalories
             mealsByDay[date].overEaten = dayCalories > this.props.caloriesPerDay
         }
         const mealsList = uniqueDates.map(date => {
@@ -49,6 +50,7 @@ class List extends Component {
                 meals={mealsByDay[date].meals}
                 date={date}
                 overEaten={mealsByDay[date].overEaten}
+                totalCalories={mealsByDay[date].totalCalories}
                 deleteMeal={this.deleteMeal}
                 baseUrl={this.baseUrl}
                 colorDay={!this.state.useTimeFilter && this.props.caloriesPerDay > 0}
@@ -155,7 +157,7 @@ class DayOfMeals extends React.Component {
         const containerClass = this.props.colorDay ? this.props.overEaten ? 'day-fail' : 'day-ok' : ''
         return (
             <div className={containerClass}>
-                <div className='day-date'>{dateFormatted}</div>
+                <div className='day-date'>{dateFormatted} - {this.props.totalCalories} calories</div>
                 <table className='table'>
                     <tbody>
                     { this.props.meals.map(m => (
