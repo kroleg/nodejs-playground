@@ -129,6 +129,7 @@ class List extends Component {
             const bfEnd = bfStart.clone().hours(15)
             this.setState({ timeFrom: bfStart, timeTo: bfEnd })
         }
+        setImmediate(() => this.searchMeals())
     }
 
     componentDidMount() {
