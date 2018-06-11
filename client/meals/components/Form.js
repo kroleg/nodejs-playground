@@ -44,7 +44,8 @@ class Form extends Component {
 
 
         const work = this.props.mealId ? api.updateMeal(this.props.userId, this.props.mealId, meal) : api.createMeal(this.props.userId, meal)
-        work.then(() => this.props.navigateTo('/meals'))
+        const goBackUrl = (this.props.userId === 'me' ? '' : '/users/' + this.props.userId) + '/meals';
+        work.then(() => this.props.navigateTo(goBackUrl))
     }
 
     handleChange(event) {
