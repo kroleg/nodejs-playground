@@ -17,11 +17,11 @@ class Signup extends Component {
                 <h1>Signup</h1>
                 <div className="form-group">
                     <label>Email address</label>
-                    <input type="email" className="form-control" placeholder="Enter email" name='email' defaultValue='test@example.com'/>
+                    <input type="email" className="form-control" placeholder="Enter email" name='email' />
                 </div>
                 <div className="form-group">
                     <label>Password</label>
-                    <input type="password" className="form-control" placeholder="Enter password"  name='password' defaultValue='123456'/>
+                    <input type="password" className="form-control" placeholder="Enter password"  name='password' />
                 </div>
                 { this.state.error ? <div className='alert alert-danger' role="alert">{this.state.error}</div> : ''}
                 <button type="submit" className="btn btn-primary">Submit</button>
