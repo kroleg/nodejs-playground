@@ -62,11 +62,12 @@ describe('Users', function () {
              })
 
              it('should update user', async function () {
-                 const newProps = { email: 'testnew@example.com', role: 'admin' }
+                 const newProps = { email: 'testnew@example.com', role: 'admin', settings: { caloriesPerDay: 100000 } }
                  await updateUser(powerUserAgent, testUser._id, newProps)
                  const updatedUser = await readUser(powerUserAgent, testUser._id)
                  expect(updatedUser).to.have.property('role', newProps.role)
                  expect(updatedUser).to.have.property('email', newProps.email)
+                 expect(updatedUser).to.have.nested.property('settings.caloriesPerDay', newProps.settings.caloriesPerDay)
              })
 
              it('should not allow to change email to email of other user', async function () {

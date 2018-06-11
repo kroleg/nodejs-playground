@@ -6,7 +6,10 @@ class Form extends Component {
         super(props)
         this.state = {
             email: '',
-            role: 'regular'
+            role: 'regular',
+            settings: {
+                caloriesPerDay: 0
+            }
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -31,6 +34,10 @@ class Form extends Component {
                         <option value="admin">Admin (ability to add/update/remove users and their meals)</option>
                     </select>
                 </div>
+                <div className="form-group">
+                    <label>Calories per day</label>
+                    <input type="text" name='caloriesPerDay' value={this.state.settings.caloriesPerDay}  onChange={e => this.caloriesChange(e)} className="form-control"/>
+                </div>
                 { this.renderError() }
                 <button type="submit" className="btn btn-primary">{this.props.userId ? 'Update' : 'Add'}</button>
             </form>
@@ -41,7 +48,8 @@ class Form extends Component {
         event.preventDefault();
         this.setState({ error: null })
 
-        const data = { email: this.state.email, role: this.state.role };
+        const data = { ...this.state };
+        delete data.password
 
         if (event.target.elements.password.value) {
             data.password = event.target.elements.password.value;
@@ -55,6 +63,12 @@ class Form extends Component {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         this.setState({ [event.target.name]: value });
+    }
+
+    caloriesChange(event) {
+        const newState = { ...this.state }
+        newState.settings.caloriesPerDay = event.target.value
+        this.setState(newState)
     }
 
     componentDidMount() {
