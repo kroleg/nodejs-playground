@@ -31,6 +31,10 @@ module.exports = {
             if (mealOwnerId !== req.user._id && authRules.notAllowedToCRUDMeals(req.user)) {
                 return res.status(403).send({ error: 'Not allowed to create meal on behalf of other user'})
             }
+            const calories = Number(typeof req.body.calories === 'string' ? req.body.calories.trim() : req.body.calories)
+            if (isNaN(calories) || calories <= 0) {
+                return res.status(400).send({ error: 'Calories shold be positive number'})
+            }
             const meal = await Meal.create({ ...req.body, user: mealOwnerId });
             res.status(201).send({ mealId: meal._id })
         } catch (err) {

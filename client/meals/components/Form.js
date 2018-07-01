@@ -30,6 +30,7 @@ class Form extends Component {
                     <label>Note</label>
                     <input type="text" name='note' className="form-control" placeholder="Note (optional)" onChange={this.handleChange} value={this.state.note}/>
                 </div>
+                { this.state.error ? <div className='alert alert-danger' role="alert">{this.state.error}</div> : ''}
                 <button type="submit" className="btn btn-primary">{this.props.mealId ? 'Update' : 'Add'}</button>
             </form>
         );
@@ -45,7 +46,7 @@ class Form extends Component {
 
         const work = this.props.mealId ? api.updateMeal(this.props.userId, this.props.mealId, meal) : api.createMeal(this.props.userId, meal)
         const goBackUrl = (this.props.userId === 'me' ? '' : '/users/' + this.props.userId) + '/meals';
-        work.then(() => this.props.navigateTo(goBackUrl))
+        work.then(() => this.props.navigateTo(goBackUrl)).catch(err => this.setState({ error: err.message }))
     }
 
     handleChange(event) {
