@@ -29,6 +29,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/api', require('./api/routes'));
+app.use('/graphql', require('./api/graphql'));
 app.use('/*', function (req, res) {
     res.send(require('fs').readFileSync(__dirname + '/../public/index.html', 'utf8'));
 });

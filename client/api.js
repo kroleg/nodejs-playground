@@ -18,6 +18,27 @@ function fetchOrThrow (url, options = defaultOptions) {
     })
 }
 
+function graphQLRequest(query, variables) {
+    const body = JSON.stringify({ query: queries.listMeals, variables })
+    return fetch('/graphql', {...defaultOptions, body, method: 'POST'})
+        .then(res => res.json())
+        .then(body => {
+            if (body.errors) {
+                throw body.errors
+            }
+            return body.data
+        })
+}
+
+const queries = {
+    listMeals: `
+        query getMeals ($userId: ID, $dateFrom: Float, $dateTo: Float) { 
+            meals(userId: $userId, dateFrom: $dateFrom, dateTo: $dateTo) { 
+                _id date time note calories 
+            } 
+        }`
+}
+
 const methods = {
 
     async getCurrentUser () {
@@ -78,8 +99,7 @@ const methods = {
     },
 
     listMeals (userId, query = {}) {
-        const qs = Object.keys(query).map(key => key + '=' + query[key]).join('&')
-        return fetchOrThrow(`/api/users/${userId}/meals` + (qs ? '?' + qs : ''), defaultOptions)
+        return graphQLRequest(queries.listMeals, { ...query, userId }).then(b => b.meals)
     },
 
     deleteMeal (userId, mealId) {
