@@ -3,7 +3,7 @@
 const api = require('express')();
 module.exports = api;
 
-const mealsController = require('./controllers/meals'),
+const
     usersController = require('./controllers/users'),
     sessionsController = require('./controllers/sessions');
 
@@ -28,14 +28,6 @@ api.route("/users/:userId")
     .get(usersController.read)
     .delete(usersController.delete)
     .patch(usersController.update);
-
-api.route('/users/:userId/meals')
-    .get(mealsController.list)
-    .post(mealsController.create);
-api.route('/users/:userId/meals/:mealId')
-    .get(mealsController.read)
-    .delete(mealsController.delete)
-    .patch(mealsController.update);
 
 api.use(function(req, res, next) {
     res.status(404).send()

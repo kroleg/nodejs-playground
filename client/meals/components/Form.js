@@ -39,12 +39,12 @@ class Form extends Component {
     handleSubmit(event) {
         event.preventDefault();
 
-        const meal = { ...this.state };
-        meal.date = meal.datetime.clone().startOf('day').valueOf()
-        meal.time = meal.datetime - meal.date;
+        const meal = { note: this.state.note, calories: this.state.calories };
+        meal.date = this.state.datetime.clone().startOf('day').valueOf()
+        meal.time = this.state.datetime - meal.date;
 
 
-        const work = this.props.mealId ? api.updateMeal(this.props.userId, this.props.mealId, meal) : api.createMeal(this.props.userId, meal)
+        const work = this.props.mealId ? api.meals.update(this.props.userId, this.props.mealId, meal) : api.meals.create(this.props.userId, meal)
         const goBackUrl = (this.props.userId === 'me' ? '' : '/users/' + this.props.userId) + '/meals';
         work.then(() => this.props.navigateTo(goBackUrl)).catch(err => this.setState({ error: err.message }))
     }
@@ -61,7 +61,7 @@ class Form extends Component {
 
     componentDidMount() {
         if (this.props.mealId) {
-            api.readMeal(this.props.userId, this.props.mealId)
+            api.meals.read(this.props.userId, this.props.mealId)
                 .then(meal => {
                     meal.datetime = moment(meal.date + meal.time)
                     delete meal.date

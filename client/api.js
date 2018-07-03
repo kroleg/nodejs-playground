@@ -18,13 +18,13 @@ function fetchOrThrow (url, options = defaultOptions) {
     })
 }
 
-function graphQLRequest(query, variables) {
-    const body = JSON.stringify({ query: queries.listMeals, variables })
-    return fetch('/graphql', {...defaultOptions, body, method: 'POST'})
+function graphQLRequest(queryName, variables) {
+    const body = JSON.stringify({ query: queries[queryName], variables })
+    return fetch('/graphql?n=' + queryName, {...defaultOptions, body, method: 'POST'})
         .then(res => res.json())
         .then(body => {
             if (body.errors) {
-                throw body.errors
+                throw new Error(body.errors[0].message)
             }
             return body.data
         })
@@ -35,6 +35,30 @@ const queries = {
         query getMeals ($userId: ID, $dateFrom: Float, $dateTo: Float) { 
             meals(userId: $userId, dateFrom: $dateFrom, dateTo: $dateTo) { 
                 _id date time note calories 
+            } 
+        }`,
+    createMeal: `
+        mutation CreateMeal ($userId: ID, $input: MealInput) { 
+            createMeal(userId: $userId, data: $input) { 
+                _id date time note calories
+            } 
+        }`,
+    updateMeal: `
+        mutation UpdateMeal ($userId: ID, $mealId: ID, $input: MealInput) { 
+            updateMeal(userId: $userId, mealId: $mealId, data: $input) { 
+                _id date time note calories
+            } 
+        }`,
+    readMeal: `
+        query ReadMeal ($userId: ID, $mealId: ID) { 
+            meal(userId: $userId, mealId: $mealId) { 
+                _id date time note calories
+            } 
+        }`,
+    deleteMeal: `
+        mutation deleteMeal ($userId: ID, $mealId: ID) { 
+            deleteMeal(userId: $userId, mealId: $mealId) { 
+                _id
             } 
         }`
 }
@@ -86,26 +110,23 @@ const methods = {
         return fetchOrThrow('/api/users')
     },
 
-    createMeal (userId, data) {
-        return fetchOrThrow(`/api/users/${userId}/meals`, {...defaultOptions, method: 'POST', body: JSON.stringify(data)})
-    },
-
-    updateMeal (userId, mealId, data) {
-        return fetchOrThrow(`/api/users/${userId}/meals/${mealId}`, {...defaultOptions, method: 'PATCH', body: JSON.stringify(data)})
-    },
-
-    readMeal (userId, mealId) {
-        return fetchOrThrow(`/api/users/${userId}/meals/${mealId}`)
-    },
-
-    listMeals (userId, query = {}) {
-        return graphQLRequest(queries.listMeals, { ...query, userId }).then(b => b.meals)
-    },
-
-    deleteMeal (userId, mealId) {
-        return fetchOrThrow(`/api/users/${userId}/meals/${mealId}`, { ...defaultOptions, method: 'DELETE' })
-    },
-
+    meals: {
+        list (userId, query = {}) {
+            return graphQLRequest('listMeals', { ...query, userId }).then(b => b.meals)
+        },
+        create (userId, data) {
+            return graphQLRequest('createMeal', { userId, input: data }).then(b => b.meal)
+        },
+        read (userId, mealId) {
+            return graphQLRequest('readMeal', { userId, mealId }).then(b => b.meal)
+        },
+        update (userId, mealId, data) {
+            return graphQLRequest('updateMeal', { userId, mealId, input: data }).then(b => b.meal)
+        },
+        delete (userId, mealId) {
+            return graphQLRequest('deleteMeal', { userId, mealId })
+        },
+    }
 }
 
 export default methods

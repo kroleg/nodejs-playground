@@ -111,7 +111,7 @@ class List extends Component {
             query.timeFrom = this.state.timeFrom - this.state.timeFrom.clone().startOf('day')
             query.timeTo = this.state.timeTo - this.state.timeTo.clone().startOf('day')
         }
-        api.listMeals(this.userId, query).then(meals => this.setState({ meals }))
+        api.meals.list(this.userId, query).then(meals => this.setState({ meals }))
     }
 
     onFiltersChange(prop, newValue) {
@@ -141,7 +141,7 @@ class List extends Component {
         if (!confirm(`Are you sure want to delete this meal?`)) {
             return
         }
-        api.deleteMeal(this.userId, mealId)
+        api.meals.delete(this.userId, mealId)
             .then(() => {
                 const meals = this.state.meals;
                 const index = meals.findIndex(m => m._id === mealId);
