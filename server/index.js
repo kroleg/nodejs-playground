@@ -36,6 +36,7 @@ app.use('/*', function (req, res) {
 
 app.listen(process.env.PORT || 3099, function () {
     console.info(' The app is up on port: ', process.env.PORT || 3099);
+    process.send && process.send('ready');
 });
 
 module.exports = app;

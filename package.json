@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "test": "mocha --exit",
+    "test": "jest",
     "webpack:dev": "webpack --mode development --watch",
     "start:dev": "nodemon server/",
     "webpack": "webpack --mode production",
@@ -32,6 +32,8 @@
     "shortid": "^2.2.8"
   },
   "devDependencies": {
+    "@types/jest": "^23.3.1",
+    "@types/puppeteer": "^1.6.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
@@ -40,13 +42,33 @@
     "babel-preset-react": "^6.24.1",
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
+    "jest": "^23.5.0",
+    "jest-puppeteer": "^3.3.1",
     "mocha": "^5.2.0",
     "moment": "^2.22.2",
+    "puppeteer": "^1.7.0",
     "react": "^16.4.0",
     "react-datetime": "^2.14.0",
     "react-dom": "^16.4.0",
     "react-router-dom": "^4.2.2",
+    "ts-jest": "^23.1.4",
+    "typescript": "^3.0.1",
     "webpack": "^4.10.2",
     "webpack-cli": "^3.0.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "clearMocks": true
   }
 }
