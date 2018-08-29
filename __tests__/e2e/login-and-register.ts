@@ -1,19 +1,16 @@
 import {Browser, BrowserContext, Page} from "puppeteer";
-import {runNodeApp} from "./_utils";
-import {ChildProcess} from "child_process";
+import { App } from "./_utils";
 
 const puppeteer = require('puppeteer');
-const APP_PORT = 30199;
-// @ts-ignore
-process.env.PORT = APP_PORT;
-const APP_URL = 'http://localhost:' + APP_PORT;
-const SINGUP_URL = APP_URL + '/signup';
 
 let browser: Browser;
-let appInstance: ChildProcess;
+let app: App;
+let loginUrl: string;
 
 beforeAll(async () => {
-    appInstance = await runNodeApp('./server/', []);
+    app = new App();
+    await app.start();
+    loginUrl = app.getUrl('/login');
     browser = await puppeteer.launch({
         // headless: false,
         // slowMo: 30,
@@ -22,14 +19,14 @@ beforeAll(async () => {
 
 afterAll(async () => {
     await browser.close();
-    appInstance.kill()
+    app.stop()
 });
 
 describe("Registration", () => {
     it("can register", async () => {
         const browsingContext: BrowserContext = await browser.createIncognitoBrowserContext();
         const page: Page = await browsingContext.newPage();
-        await page.goto(SINGUP_URL);
+        await page.goto(app.getUrl('/signup'));
         await page.waitForSelector("[name=email]");
         await page.type("[name=email]", 'new_user' + Math.random() + '@example.com');
         await page.type("[name=password]", '123456');
@@ -43,7 +40,7 @@ describe("Login page", () => {
     it("should login", async () => {
         const browsingContext = await browser.createIncognitoBrowserContext();
         const page: Page = await browsingContext.newPage();
-        await page.goto(APP_URL + '/login');
+        await page.goto(loginUrl);
         await page.waitForSelector("[name=email]");
         await page.type("[name=email]", 'admin@example.com');
         await page.type("[name=password]", '123456');
@@ -55,7 +52,7 @@ describe("Login page", () => {
     it("should return error if provided non-registered email", async () => {
         const browsingContext = await browser.createIncognitoBrowserContext();
         const page: Page = await browsingContext.newPage();
-        await page.goto(APP_URL + '/login');
+        await page.goto(loginUrl);
         await page.waitForSelector("[name=email]");
         await page.type("[name=email]", 'incorrect@example.com');
         await page.type("[name=password]", '123456');
@@ -68,7 +65,7 @@ describe("Login page", () => {
     it("should return error if provided incorrect password", async () => {
         const browsingContext = await browser.createIncognitoBrowserContext();
         const page: Page = await browsingContext.newPage();
-        await page.goto(APP_URL + '/login');
+        await page.goto(loginUrl);
         await page.waitForSelector("[name=email]");
         await page.type("[name=email]", 'admin@example.com');
         await page.type("[name=password]", '1');
