@@ -1,5 +1,5 @@
 import {Browser, BrowserContext, Page} from "puppeteer";
-import { App } from "./_utils";
+import { App, startAppForE2E } from "../_utils/e2e";
 
 const puppeteer = require('puppeteer');
 
@@ -8,8 +8,7 @@ let app: App;
 let loginUrl: string;
 
 beforeAll(async () => {
-    app = new App();
-    await app.start();
+    app = await startAppForE2E();
     loginUrl = app.getUrl('/login');
     browser = await puppeteer.launch({
         // headless: false,

@@ -3,9 +3,10 @@
 // 4. Each entry has a date, time, text, and num of calories.
 
 import {Browser, Page} from "puppeteer";
-import {App, confirmNextDialog, Db, register} from "./_utils";
+import { startAppForE2E, confirmNextDialog, Db, connectToDbForE2E, register} from "../_utils/e2e";
 
 import * as puppeteer from 'puppeteer';
+import {App} from "../_utils/app";
 let browser: Browser;
 let app: App;
 let db: Db;
@@ -16,8 +17,7 @@ const user = { email: 'user@example.com', password: '12345678' };
 jest.setTimeout(15000);
 
 beforeAll(async () => {
-    app = new App();
-    await app.start();
+    app = await startAppForE2E();
     browser = await puppeteer.launch({
         // headless: false,
         slowMo: 50,
@@ -27,8 +27,7 @@ beforeAll(async () => {
 });
 
 beforeAll(async () => {
-    db = new Db();
-    await db.connect();
+    db = await connectToDbForE2E();
     await db.wipeUsers();
     console.log(await db.getAllUsers());
 });
