@@ -3,7 +3,7 @@
 // 4. Each entry has a date, time, text, and num of calories.
 
 import {Browser, Page} from "puppeteer";
-import { startAppForE2E, confirmNextDialog, Db, connectToDbForE2E, register} from "../_utils/e2e";
+import {startAppForE2E, confirmNextDialog, Db, connectToDbForE2E, register, getMyMeals} from "../_utils/e2e";
 
 import * as puppeteer from 'puppeteer';
 import {App} from "../_utils/app";
@@ -29,7 +29,6 @@ beforeAll(async () => {
 beforeAll(async () => {
     db = await connectToDbForE2E();
     await db.wipeUsers();
-    console.log(await db.getAllUsers());
 });
 
 beforeAll(async () => {
@@ -52,7 +51,7 @@ describe("My meals", () => {
         expect(page.url()).toMatch(/meals$/);
     });
 
-    it("should add meal", async () => {
+    it("should add meal and show it", async () => {
         await page.goto(app.getUrl('/meals'));
         const addLinkSelector = 'a[href="/meals/add"]';
         // await page.waitForSelector(addLinkSelector);
@@ -63,19 +62,19 @@ describe("My meals", () => {
         await page.type("[name=note]", 'pizza');
         await page.click("[type=submit]");
         await page.waitForSelector('.meals-list');
-        // todo check that meal displayed
+        const mealsByDays = await getMyMeals(app, page);
+        console.log({ mealsByDays })
+        expect(mealsByDays).toHaveLength(1);
+        expect(mealsByDays[0].meals).toHaveLength(1);
+        // expect(meals[0]).toHaveProperty('time', ) // todo check time
+        expect(mealsByDays).toHaveProperty('0.meals.0.calories', 1000);
+        expect(mealsByDays).toHaveProperty('0.meals.0.note', 'pizza');
     });
 
     // todo check that custom date will be displayed correctly too
 
     it.skip("should list meals", async () => {
         await page.goto(app.getUrl('/meals'));
-        await page.waitForSelector('input[name="calories"]');
-        expect(page.url()).toMatch(/meals\/add$/);
-        await page.type("[name=calories]", '1000');
-        await page.type("[name=note]", 'pizza');
-        await page.click("[type=submit]");
-        await page.waitForSelector('.meals-list');
     });
 
     it("should remove meal", async () => {

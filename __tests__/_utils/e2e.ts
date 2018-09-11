@@ -46,3 +46,30 @@ export function confirmNextDialog(page: Page) {
         dialog.accept();
     });
 }
+
+interface MealInfo {
+    calories: number;
+    note: string;
+    time: string;
+}
+interface DayInfo {
+    meals: MealInfo[];
+    date: string;
+}
+export async function getMyMeals(app, page: Page): Promise<DayInfo[]> {
+    await page.goto(app.getUrl('/meals'));
+    //@ts-ignore
+    return page.$$eval('.meals-table-day tbody', tds => tds.map(tbody => {
+        return {
+            date: tbody.querySelector('th .day-date').innerHTML,
+            meals: Array.from(tbody.querySelectorAll('tr')).map(tr => {
+                //@ts-ignore
+                const data = Array.from(tr.querySelectorAll('td')).map(td => td.innerHTML);
+                if (data.length) {
+                    return {time: data[0], calories: Number(data[1]), note: data[2]}
+                }
+                return null;
+            }).filter(meal => !!meal)
+        }
+    }))
+}
