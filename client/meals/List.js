@@ -169,7 +169,7 @@ class DayOfMeals extends React.Component {
                     <td>{m.calories}</td>
                     <td>{m.note}</td>
                     <td className='table_actions table_actions--show-on-hover'>
-                        <Link to={`${this.props.baseUrl}/${m._id}/edit`}>Edit</Link>
+                        <Link to={`${this.props.baseUrl}/${m._id}/edit`} data-action={'edit'}>Edit</Link>
                         <a href='' onClick={this.deleteClick.bind(this, m._id)} className='link-danger'>Delete</a>
                     </td>
                 </tr>

@@ -3,7 +3,7 @@
 // 4. Each entry has a date, time, text, and num of calories.
 
 import {Browser, Page} from "puppeteer";
-import {startAppForE2E, confirmNextDialog, Db, connectToDbForE2E, register, getMyMeals} from "../_utils/e2e";
+import {startAppForE2E, confirmNextDialog, Db, connectToDbForE2E, register, getMyMeals, clearAndType} from "../_utils/e2e";
 
 import * as puppeteer from 'puppeteer';
 import {App} from "../_utils/app";
@@ -20,7 +20,7 @@ beforeAll(async () => {
     app = await startAppForE2E();
     browser = await puppeteer.launch({
         // headless: false,
-        slowMo: 50,
+        slowMo: 25,
     });
     page = await browser.newPage();
     page.setDefaultNavigationTimeout(2000);
@@ -63,7 +63,6 @@ describe("My meals", () => {
         await page.click("[type=submit]");
         await page.waitForSelector('.meals-list');
         const mealsByDays = await getMyMeals(app, page);
-        console.log({ mealsByDays })
         expect(mealsByDays).toHaveLength(1);
         expect(mealsByDays[0].meals).toHaveLength(1);
         // expect(meals[0]).toHaveProperty('time', ) // todo check time
@@ -75,6 +74,24 @@ describe("My meals", () => {
 
     it.skip("should list meals", async () => {
         await page.goto(app.getUrl('/meals'));
+    });
+
+    it("should edit meal", async () => {
+        await page.goto(app.getUrl('/meals'));
+        await page.waitForSelector('.table_actions--show-on-hover', { visible: true });
+        await page.hover('.table_actions--show-on-hover')
+        await page.click('a[data-action=edit]')
+        expect(page.url()).toMatch(/meals.*edit/);
+        await clearAndType(page, '[name=calories]', '1');
+        await clearAndType(page, '[name=note]', 'tea');
+        await page.click("[type=submit]");
+
+        const mealsByDays = await getMyMeals(app, page);
+        expect(mealsByDays).toHaveLength(1);
+        expect(mealsByDays[0].meals).toHaveLength(1);
+        // expect(meals[0]).toHaveProperty('time', ) // todo check time
+        expect(mealsByDays).toHaveProperty('0.meals.0.calories', 1);
+        expect(mealsByDays).toHaveProperty('0.meals.0.note', 'tea');
     });
 
     it("should remove meal", async () => {

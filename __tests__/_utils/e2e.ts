@@ -73,3 +73,13 @@ export async function getMyMeals(app, page: Page): Promise<DayInfo[]> {
         }
     }))
 }
+
+export async function clearAndType(page: Page, selector: string, text: string) {
+    const elementHandle = await page.$(selector);
+    await elementHandle.click();
+    await elementHandle.focus();
+    // click three times to select all
+    await elementHandle.click({clickCount: 3});
+    await elementHandle.press('Backspace');
+    await page.type(selector, text);
+}
