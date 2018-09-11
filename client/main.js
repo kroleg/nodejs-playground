@@ -92,7 +92,7 @@ class Navigation extends React.Component {
 
     render () {
         return (
-            <nav className="navbar-light bg-light">
+            <nav className="navbar-light">
                 <Link to='/meals'>My meals</Link>
                 <Link to='/settings'>Settings</Link>
 

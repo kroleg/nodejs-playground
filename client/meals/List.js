@@ -72,7 +72,9 @@ class List extends Component {
                 </div>
 
                 <div className="meals-list">
-                    {mealsList}
+                    <table className='table meals-table-day'>
+                        {mealsList}
+                    </table>
                 </div>
 
             </div>
@@ -157,24 +159,22 @@ class DayOfMeals extends React.Component {
         const dateFormatted = moment(this.props.date).format('MMM Do')
         const containerClass = this.props.colorDay ? this.props.overEaten ? 'day-fail' : 'day-ok' : ''
         return (
-            <div className={containerClass}>
-                <div className='day-date'>{dateFormatted} - {this.props.totalCalories} calories</div>
-                <table className='table'>
-                    <tbody>
-                    { this.props.meals.map(m => (
-                        <tr key={m._id}>
-                            <td>{moment(m.time + m.date).format('H:mm')}</td>
-                            <td>{m.calories}</td>
-                            <td>{m.note}</td>
-                            <td className='table_actions table_actions--show-on-hover'>
-                                <Link to={`${this.props.baseUrl}/${m._id}/edit`}>Edit</Link>
-                                <a href='' onClick={this.deleteClick.bind(this, m._id)} className='link-danger'>Delete</a>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            </div>
+            <tbody className={containerClass}>
+                <tr>
+                    <th colSpan="4"><div className='day-date'>{dateFormatted} - {this.props.totalCalories} calories</div></th>
+                </tr>
+            { this.props.meals.map(m => (
+                <tr key={m._id}>
+                    <td>{moment(m.time + m.date).format('H:mm')}</td>
+                    <td>{m.calories}</td>
+                    <td>{m.note}</td>
+                    <td className='table_actions table_actions--show-on-hover'>
+                        <Link to={`${this.props.baseUrl}/${m._id}/edit`}>Edit</Link>
+                        <a href='' onClick={this.deleteClick.bind(this, m._id)} className='link-danger'>Delete</a>
+                    </td>
+                </tr>
+            ))}
+            </tbody>
         )
     }
 
